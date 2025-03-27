@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "308243076253",
+    "project_id": "silvercare-hesdi",
+    "storage_bucket": "silvercare-hesdi.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:308243076253:android:e4637973809d703c6bf074",
+        "android_client_info": {
+          "package_name": "com.hesdi.silvercare"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBz1PM2IxKd27tdBCBBqGvO9DeApPEXt7s"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
