@@ -56,6 +56,7 @@ import com.hesdi.silvercare.ui.theme.SilverCareTheme
 import com.hesdi.silvercare.ui.theme.amarillo
 import com.hesdi.silvercare.ui.theme.azulCielo
 import com.hesdi.silvercare.ui.theme.azulRey
+import com.hesdi.silvercare.ui.theme.verde
 import kotlin.jvm.java
 
 class Registro : ComponentActivity() {
@@ -74,11 +75,15 @@ class Registro : ComponentActivity() {
 fun RegistroFrame() {
     SilverCareTheme {
         var correo by remember { mutableStateOf("")}
-        var contraseña by remember { mutableStateOf("")}
+        var contrasena by remember { mutableStateOf("")}
         var passwordVisible by remember { mutableStateOf(false) }
 
         val context = LocalContext.current
         val activity =(LocalContext.current as? Activity)
+        val errores = validarcontrasena((contrasena))
+        val erroresCorreo = validarCorreo(correo)
+
+        val enable= erroresCorreo.isEmpty() && errores.isEmpty()
 
         Box(modifier = Modifier
             .fillMaxSize()
@@ -118,13 +123,20 @@ fun RegistroFrame() {
                         color = Color.White,
                         fontSize = 20.sp
                     ) },
+                    isError = erroresCorreo.isNotEmpty()
+                    ,
                     textStyle = TextStyle(color = Color.White)
                 )
-
                 Spacer(modifier = Modifier.height(20.dp) )
-
+                if (erroresCorreo.isNotEmpty()){
+                    Column {
+                        erroresCorreo.forEach { error ->
+                            Text(text = "❌ $error", color = amarillo, fontSize = 16.sp)
+                        }
+                    }
+                }
                 Text(
-                    text = "Contraseña",
+                    text = "contrasena",
                     color = MaterialTheme.colorScheme.onPrimary,
                     style = MaterialTheme.typography.bodyLarge,
                     fontWeight = FontWeight.SemiBold,
@@ -132,24 +144,32 @@ fun RegistroFrame() {
 
                 )
                 OutlinedTextField(
-                    value = contraseña,
-                    onValueChange = { contraseña = it },
-                    label = { Text("Ingresar contraseña", color = Color.White, fontSize = 20.sp) },
+                    value = contrasena,
+                    onValueChange = { contrasena = it },
+                    label = { Text("Ingresar contrasena", color = Color.White, fontSize = 20.sp) },
                     textStyle = TextStyle(color = Color.White),
                     visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
                     keyboardOptions = KeyboardOptions.Default.copy(
-                        keyboardType = KeyboardType.Password
-                    ),
+                        keyboardType = KeyboardType.Password),
+                    isError= errores.isNotEmpty(),
                     trailingIcon = {
                         IconButton(onClick = { passwordVisible = !passwordVisible }) {
                             Icon(
                                 painter = painterResource(id = if (passwordVisible) R.drawable.ic_visibility else R.drawable.ic_visibility_off),
-                                contentDescription = if (passwordVisible) "Ocultar contraseña" else "Mostrar contraseña",
+                                contentDescription = if (passwordVisible) "Ocultar contrasena" else "Mostrar contrasena",
                                 tint = Color.White
                             )
                         }
                     }
                 )
+                Spacer(modifier = Modifier.height(15.dp) )
+                if (errores.isNotEmpty()) {
+                    Column {
+                        errores.forEach { error ->
+                            Text(text = "❌ $error", color = amarillo, fontSize = 16.sp)
+                        }
+                    }
+                }
                 Spacer(modifier = Modifier.height(20.dp) )
                 Row (
                 ){
@@ -176,7 +196,7 @@ fun RegistroFrame() {
                 }
                 Spacer(modifier = Modifier.height(20.dp) )
                 OutlinedButton(
-                    onClick = {Registrar (correo,contraseña){ success ->
+                    onClick = {Registrar (correo,contrasena){ success ->
                         if (success){
                             Toast.makeText(context, "Usuario registrado", Toast.LENGTH_SHORT).show()
                         }else{
@@ -185,14 +205,14 @@ fun RegistroFrame() {
 
                     }
                     },
+                    enabled = enable,
                     modifier = Modifier
                         .padding(15.dp)
-                        .border(2.dp, Color.Transparent, RoundedCornerShape(12.dp))
+                        .border(2.dp, Color.Gray, RoundedCornerShape(12.dp))
                         .width(300.dp),
 
                     colors = ButtonDefaults.outlinedButtonColors(
                         containerColor = amarillo,
-                        contentColor = MaterialTheme.colorScheme.onPrimary
                     ),
                     shape = RoundedCornerShape(12.dp),
 
@@ -200,22 +220,41 @@ fun RegistroFrame() {
                     Text(
                         text = "Registrar",
                         fontWeight = FontWeight.Bold,
-                        fontSize = 20.sp
+                        fontSize = 20.sp,
+                        color = Color.White
                     )
 
                 }
-
-
-            }
-        }
+            }        }
     }
 }
 
-fun Registrar(correo: String, contraseña: String, onResult: (Boolean) -> Unit) {
-    FirebaseAuth.getInstance().createUserWithEmailAndPassword(correo, contraseña)
+fun Registrar(correo: String, contrasena: String, onResult: (Boolean) -> Unit) {
+    FirebaseAuth.getInstance().createUserWithEmailAndPassword(correo, contrasena)
         .addOnCompleteListener { task ->
             onResult(task.isSuccessful) // Retorna true si es exitoso, false si falla
         }
+}
+fun validarcontrasena(contrasena: String): List<String> {
+    val errores = mutableListOf<String>()
+
+    if (contrasena.length < 8) errores.add("Debe tener al menos 8 caracteres.")
+    if (!contrasena.any { it.isUpperCase() }) errores.add("Debe incluir al menos una letra mayúscula.")
+    if(!contrasena.any(){it.isLowerCase()})errores.add("Debe incluir al menos una letra miniscula")
+    if (!contrasena.any { it.isDigit() }) errores.add("Debe incluir al menos un número.")
+    return errores
+}
+
+fun validarCorreo(correo: String): List<String> {
+    val erroresCorreo= mutableListOf<String>()
+
+    val correoValidado = Regex("^[A-Za-z0-9+_.-]+@[A-Za-z_.-]{5,}\$")
+    if(correo.isBlank()){
+        erroresCorreo.add("El correo no puede estar vacio")
+    }else if(!correoValidado.matches(correo)){
+        erroresCorreo.add("Formato de correo no valido")
+    }
+    return erroresCorreo
 }
 
 
