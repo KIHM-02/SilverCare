@@ -10,6 +10,10 @@ import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
+import com.hesdi.silvercare.ui.theme.azulRey
+import com.hesdi.silvercare.ui.theme.azulCielo
+import com.hesdi.silvercare.ui.theme.amarillo
+
 
 private val DarkColorScheme = darkColorScheme(
     primary = azulRey,
