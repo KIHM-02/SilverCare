@@ -43,6 +43,9 @@ android {
 }
 
 dependencies {
+    // Permite previsualizar la imagen de los medicamentos
+    implementation("io.coil-kt:coil-compose:2.2.2")
+
     implementation(platform("com.google.firebase:firebase-bom:33.11.0"))
     implementation("com.google.firebase:firebase-analytics")
     implementation("com.google.firebase:firebase-auth:23.2.0")
