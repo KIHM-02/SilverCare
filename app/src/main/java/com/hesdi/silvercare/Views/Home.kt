@@ -2,14 +2,10 @@ package com.hesdi.silvercare.Views
 
 import android.content.Intent
 import android.os.Bundle
-import android.widget.Button
-import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -21,26 +17,28 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Button
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.LineHeightStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.hesdi.silvercare.IniciarSesion
+import com.hesdi.silvercare.Login
 import com.hesdi.silvercare.R
 import com.hesdi.silvercare.ui.theme.SilverCareTheme
 import com.hesdi.silvercare.ui.theme.amarillo
@@ -53,16 +51,36 @@ class Home : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             SilverCareTheme {
-                 HomeFrame()
-                }
+                HomeFrame(
+                    onNavigatetoLogin = {
+                        val intent = Intent(this, Login::class.java)
+                        startActivity(intent)
+                    },
+                    onNavigatetoRecordatorios = {
+                        //val intent = Intent(this, Recordatorios::class.java)
+                        //startActivity(intent)
+                    },
+                    onNavigatetoCitas = {
+                        //val intent = Intent(this, Citas::class.java)
+                        //startActivity(intent)
+                    },
+                    onNavigatetoSOS = {
+                        //val intent = Intent(this, SOS::class.java)
+                        //startActivity(intent)
+                    }
+                )
             }
         }
     }
-
+}
 
 @Composable
-fun HomeFrame() {
-
+fun HomeFrame(
+    onNavigatetoLogin: () -> Unit = {},
+    onNavigatetoRecordatorios: () -> Unit = {},
+    onNavigatetoCitas: () -> Unit = {},
+    onNavigatetoSOS: () -> Unit = {}
+) {
     Box(modifier = Modifier
         .fillMaxSize()
         .background(
@@ -74,36 +92,69 @@ fun HomeFrame() {
         ),
         contentAlignment = Alignment.Center
     ) {
-       Column(
-           horizontalAlignment = Alignment.CenterHorizontally,
-           verticalArrangement = Arrangement.spacedBy(20.dp),
-           modifier = Modifier.padding(16.dp)
-       ){
-           SeccionPerfil()
-           MenuBotones("Recordatorios",R.drawable.applogo4) {/*Aqui se implementa la funcion del boton*/}
-           MenuBotones("Citas medicas",R.drawable.applogo4) {/*Aqui se implementa la funcion del boton*/}
-           MenuBotones("SOS",R.drawable.applogo4) {/*Aqui se implementa la funcion del boton*/}
-       }
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(20.dp),
+            modifier = Modifier.padding(16.dp)
+        ){
+            SeccionPerfil(
+                onNavigate = onNavigatetoLogin
+            )
+            MenuBotones(
+                text = "Recordatorios",
+                iconRes = R.drawable.baseline_access_time_24,
+                onClick = onNavigatetoRecordatorios
+            )
+            MenuBotones(
+                text = "Citas médicas",
+                iconRes = R.drawable.baseline_calendar_month_24,
+                onClick = onNavigatetoCitas
+            )
+            MenuBotones(
+                text = "SOS",
+                iconRes = R.drawable.baseline_sos_24,
+                onClick = onNavigatetoSOS
+            )
+        }
     }
 }
 
-//Parte superior para visualizar el perfil, trabajando en ello 💪
+//Parte superior para visualizar el perfil
 @Composable
-fun SeccionPerfil(){
+fun SeccionPerfil(onNavigate: () -> Unit) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .padding(16.dp),
         verticalAlignment = Alignment.CenterVertically
-    ){
-
+    ) {
+        Icon(
+            imageVector = Icons.Default.AccountCircle,
+            contentDescription = "Icono de Perfil",
+            modifier = Modifier
+                .size(60.dp)
+                .clip(CircleShape)
+                .background(Color.White),
+            tint = Color(0xFF0F4C81)
+        )
+        Spacer(modifier = Modifier.weight(1f))
+        IconButton(onClick = {
+            onNavigate()
+        }) {
+            Icon(
+                modifier = Modifier.size(60.dp),
+                painter = painterResource(id = R.drawable.baseline_keyboard_return_24),
+                contentDescription = "Icono regreso",
+                tint = Color(0xFFB0E000)
+            )
+        }
     }
 }
 
-//Funcion de botones, se supone que esto funciona correctamente
+//Función de botones
 @Composable
 fun MenuBotones(
-    text:String, iconRes: Int, onClick: () -> Unit
+    text: String, iconRes: Int, onClick: () -> Unit
 ){
     OutlinedButton(
         onClick = onClick,
@@ -112,7 +163,9 @@ fun MenuBotones(
             contentColor = MaterialTheme.colorScheme.onPrimary
         ),
         shape = RoundedCornerShape(12.dp),
-        modifier = Modifier.fillMaxWidth(0.7f).height(50.dp)
+        modifier = Modifier
+            .fillMaxWidth(0.7f)
+            .height(50.dp)
     ) {
         Row (
             verticalAlignment = Alignment.CenterVertically
@@ -121,7 +174,7 @@ fun MenuBotones(
                 painter = painterResource(id = iconRes),
                 contentDescription = text,
                 tint = Color.White,
-                modifier = Modifier.size(20.dp)
+                modifier = Modifier.size(30.dp)
             )
             Spacer(modifier = Modifier.width(8.dp))
             Text(
