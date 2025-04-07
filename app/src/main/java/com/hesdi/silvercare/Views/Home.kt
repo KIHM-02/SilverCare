@@ -57,8 +57,8 @@ class Home : ComponentActivity() {
                         startActivity(intent)
                     },
                     onNavigatetoRecordatorios = {
-                        //val intent = Intent(this, Recordatorios::class.java)
-                        //startActivity(intent)
+                        val intent = Intent(this, Recordatorios::class.java)
+                        startActivity(intent)
                     },
                     onNavigatetoCitas = {
                         //val intent = Intent(this, Citas::class.java)

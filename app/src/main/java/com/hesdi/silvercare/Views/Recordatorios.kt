@@ -1,12 +1,12 @@
 package com.hesdi.silvercare.Views
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -19,8 +19,10 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.TextFieldValue
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.hesdi.silvercare.R
@@ -44,6 +46,7 @@ class Recordatorios : ComponentActivity() {
 fun MedicamentosScreen() {
     var searchQuery by remember { mutableStateOf(TextFieldValue("")) }
     val medicamentos = List(6) { "Aquí va el medicamento" }
+    val context = LocalContext.current
 
     Column(
         modifier = Modifier
@@ -55,7 +58,10 @@ fun MedicamentosScreen() {
         Spacer(modifier = Modifier.height(50.dp))
         // Botón superior
         Button(
-            onClick = { /* Regresar*/ },
+            onClick = {
+                val intent = Intent(context, Medicamento::class.java)
+                context.startActivity(intent)
+            },
             colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFA3C525)),
             modifier = Modifier
                 .fillMaxWidth()
@@ -133,5 +139,14 @@ fun MedicamentoCard(nombre: String) {
                     .padding(start = 8.dp)
             )
         }
+    }
+}
+
+
+@Preview
+@Composable
+fun MedicamentosScreenPreview() {
+    SilverCareTheme {
+        MedicamentosScreen()
     }
 }

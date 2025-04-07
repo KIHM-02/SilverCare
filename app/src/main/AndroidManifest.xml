@@ -22,9 +22,16 @@
 
         <activity
             android:name=".Views.Home"
-            android:exported="false"
+            android:exported="true"
             android:label="@string/title_activity_home"
-            android:theme="@style/Theme.SilverCare" />
+            android:theme="@style/Theme.SilverCare">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
         <activity
             android:name=".Views.Registro"
             android:exported="false"
@@ -38,14 +45,9 @@
         </activity>
         <activity
             android:name=".Views.Recordatorios"
-            android:exported="true"
+            android:exported="false"
             android:label="@string/app_name"
             android:theme="@style/Theme.SilverCare">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
         </activity>
     </application>
 
