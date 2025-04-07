@@ -158,6 +158,23 @@ fun LoginFrame() {
                         }
                     }
                 )
+                Spacer(modifier = Modifier.height(10.dp))
+                Row(){
+                    Text(
+                        text="Se te olvido tu contraseña",
+                        fontSize = 15.sp,
+                        style = MaterialTheme.typography.bodyLarge,
+                        color = Color.White
+                    )
+                    Spacer(modifier = Modifier.width(15.dp))
+                    Text(
+                        text = "Recuperar contraseña",
+                        color = Color.White,
+                        fontSize = 15.sp,
+                        style = MaterialTheme.typography.bodyLarge,
+                        fontWeight = FontWeight.SemiBold,
+                        )
+                }
                 Spacer(modifier = Modifier.height(20.dp) )
                 Row (
                 ){
@@ -166,8 +183,9 @@ fun LoginFrame() {
                         fontSize = 20.sp,
                         color= MaterialTheme.colorScheme.onPrimary,
                         style = MaterialTheme.typography.bodyMedium,
-                        fontWeight = FontWeight.SemiBold,
+
                     )
+
                     Spacer(modifier = Modifier.width(15.dp))
                     Text(
                         text="Registrate",
