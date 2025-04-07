@@ -1,8 +1,8 @@
 package com.hesdi.silvercare.Views
 
+
 import android.net.Uri
 import android.os.Bundle
-import android.widget.Space
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
@@ -12,7 +12,6 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
-
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -20,17 +19,21 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
-
-
+import androidx.compose.material3.TimeInput
+import androidx.compose.material3.TimePickerDefaults
+import androidx.compose.material3.rememberTimePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -53,6 +56,7 @@ import com.hesdi.silvercare.ui.theme.SilverCareTheme
 import com.hesdi.silvercare.ui.theme.amarillo
 import com.hesdi.silvercare.ui.theme.azulCielo
 import com.hesdi.silvercare.ui.theme.azulRey
+import java.util.Calendar
 
 class Medicamento: ComponentActivity()
 {
@@ -84,7 +88,8 @@ fun MedicamentoView()
         )
     ) {
         Column(modifier = Modifier
-            .fillMaxWidth(),
+            .fillMaxWidth()
+            .verticalScroll(rememberScrollState()), //Permite hacerlo scrollable
             horizontalAlignment = Alignment.CenterHorizontally)
         {
 
@@ -112,10 +117,25 @@ fun MedicamentoView()
                 ImagePicker()
             }
 
-            SpaceTopBottom(40)
+            SpaceTopBottom(20)
 
             OutlinedInputs("Fecha de caducidad","Registrar fecha de caducidad")
 
+            SpaceTopBottom(40)
+
+            SelectorHora()
+
+            SpaceTopBottom(40)
+
+            Button(
+                onClick = {},
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = amarillo,
+                    contentColor = Color.Black
+                ))
+            {
+                TextosSimples("Registrar", Color.White)
+            }
         }
     }
 }
@@ -187,6 +207,62 @@ fun ImagePicker()
     }
 
 }
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun SelectorHora() {
+    val currentTime = Calendar.getInstance()
+    val timePickerState = rememberTimePickerState(
+        initialHour = currentTime.get(Calendar.HOUR_OF_DAY),
+        initialMinute = currentTime.get(Calendar.MINUTE),
+        is24Hour = true,
+    )
+
+    // Caja blanca con esquinas redondeadas
+    Box(
+        modifier = Modifier
+            .fillMaxWidth(0.9f)
+            .background(Color.White, shape = MaterialTheme.shapes.medium)
+            .padding(16.dp)
+    ) {
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = Modifier.fillMaxWidth()
+        ) {
+
+            Text(
+                text = "Seleccionar hora",
+                color = Color.Black,
+                fontSize = 20.sp,
+                fontWeight = FontWeight.Bold
+            )
+
+            SpaceTopBottom(10)
+
+            TimeInput(
+                state = timePickerState,
+                colors = TimePickerDefaults.colors(
+                    clockDialColor = Color.Green, // fondo del reloj
+                    clockDialSelectedContentColor = Color.Black, // número seleccionado
+                    clockDialUnselectedContentColor = Color.Yellow, // números no seleccionados
+                    periodSelectorSelectedContainerColor = Color.Green, // AM/PM fondo seleccionado
+                    periodSelectorUnselectedContainerColor = Color.Yellow // AM/PM fondo no seleccionado
+                ))
+
+            SpaceTopBottom(10)
+
+            val horaFormateada = String.format("%02d:%02d", timePickerState.hour, timePickerState.minute)
+
+            Text(
+                text = "Hora seleccionada: $horaFormateada",
+                color = Color.Black,
+                fontSize = 18.sp,
+                fontWeight = FontWeight.Medium
+            )
+        }
+    }
+}
+
 
 @Composable
 fun TextosSimples(text: String, color: Color)
