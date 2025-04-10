@@ -1,4 +1,4 @@
-package com.hesdi.silvercare.Views
+package com.hesdi.silvercare.views
 
 import android.content.Intent
 import android.os.Bundle
@@ -105,6 +105,7 @@ fun MedicamentosScreen() {
                 .padding(top = 12.dp)
         ) {
             Icon(
+                //TODO: Reemplazar por imagen
                 imageVector = Icons.Filled.ArrowBack,
                 contentDescription = "Volver",
                 tint = Color(0xFFA3C525),
