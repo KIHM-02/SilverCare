@@ -1,8 +1,9 @@
-package com.hesdi.silvercare.Views
+package com.hesdi.silvercare.views
 
 
 import android.net.Uri
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
@@ -76,6 +77,8 @@ class Medicamento: ComponentActivity()
 @Composable
 fun MedicamentoView()
 {
+    var medicamento by remember { mutableStateOf("") }
+
     Box(modifier = Modifier
         .fillMaxSize()
         .background(
@@ -107,7 +110,8 @@ fun MedicamentoView()
 
             SpaceTopBottom(40)
 
-            OutlinedInputs("Medicamento","Registrar medicamento")
+            //OutlinedInputs("Medicamento","Registrar medicamento")
+            medicamento = OutlinedInputsTest("Medicamento","Registrar medicamento")
 
             SpaceTopBottom(40)
 
@@ -128,7 +132,10 @@ fun MedicamentoView()
             SpaceTopBottom(40)
 
             Button(
-                onClick = {},
+                onClick = {
+
+                    ///TODO Toast.makeText(this, "Error", Toast.LENGTH_SHORT).show()
+                },
                 colors = ButtonDefaults.buttonColors(
                     containerColor = amarillo,
                     contentColor = Color.Black
@@ -312,6 +319,34 @@ fun OutlinedInputs(title: String, text: String)
             cursorColor = Color.Yellow
         )
     )
+}
+
+@Composable
+fun OutlinedInputsTest(title: String, text: String): String
+{
+    var string by remember { mutableStateOf(text) }
+
+    OutlinedTextField(
+        value = string,
+        onValueChange = { string = it },
+        label = {
+            TextosSimples(text = title, amarillo)
+        },
+        maxLines = 1,
+        colors = TextFieldDefaults.colors(
+            focusedTextColor = Color.White,
+            unfocusedTextColor = Color.White,
+            focusedContainerColor = Color.Transparent,
+            unfocusedContainerColor = Color.Transparent,
+            focusedLabelColor = Color.White,
+            unfocusedLabelColor = Color.White,
+            focusedIndicatorColor = Color.White,
+            unfocusedIndicatorColor = amarillo,
+            cursorColor = Color.Yellow
+        )
+    )
+
+    return string
 }
 
 @Preview(

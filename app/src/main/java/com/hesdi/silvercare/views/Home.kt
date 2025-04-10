@@ -1,4 +1,4 @@
-package com.hesdi.silvercare.Views
+package com.hesdi.silvercare.views
 
 import android.content.Intent
 import android.os.Bundle
