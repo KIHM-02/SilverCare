@@ -1,7 +1,6 @@
-package com.hesdi.silvercare.Views
+package com.hesdi.silvercare.views
 
 import android.app.Activity
-import android.content.Intent
 import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.ComponentActivity
@@ -49,15 +48,11 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.google.firebase.auth.FirebaseAuth
-import com.hesdi.silvercare.*
-import com.hesdi.silvercare.Views.Registro
 import com.hesdi.silvercare.R
 import com.hesdi.silvercare.ui.theme.SilverCareTheme
 import com.hesdi.silvercare.ui.theme.amarillo
 import com.hesdi.silvercare.ui.theme.azulCielo
 import com.hesdi.silvercare.ui.theme.azulRey
-import com.hesdi.silvercare.ui.theme.verde
-import kotlin.jvm.java
 
 class Registro : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {

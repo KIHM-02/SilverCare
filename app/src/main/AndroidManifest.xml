@@ -14,7 +14,7 @@
         android:theme="@style/Theme.SilverCare"
         tools:targetApi="31">
         <activity
-            android:name=".Views.Medicamento"
+            android:name=".views.Medicamento"
             android:exported="true"
             android:label="Medicamento"
             android:theme="@style/Theme.SilverCare">
@@ -27,12 +27,12 @@
         </activity>
 
         <activity
-            android:name=".Views.Home"
+            android:name=".views.Home"
             android:exported="false"
             android:label="@string/title_activity_home"
             android:theme="@style/Theme.SilverCare" />
         <activity
-            android:name=".Views.Registro"
+            android:name=".views.Registro"
             android:exported="false"
             android:label="@string/title_activity_registro"
             android:theme="@style/Theme.SilverCare" />
