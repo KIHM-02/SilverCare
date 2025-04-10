@@ -72,6 +72,10 @@ fun RegistroFrame() {
         var correo by remember { mutableStateOf("")}
         var contrasena by remember { mutableStateOf("")}
         var passwordVisible by remember { mutableStateOf(false) }
+        var mensaje by remember { mutableStateOf(false)}
+
+
+        var isLoading by remember { mutableStateOf(false) }
 
         val context = LocalContext.current
         val activity =(LocalContext.current as? Activity)
@@ -130,6 +134,7 @@ fun RegistroFrame() {
                         }
                     }
                 }
+
                 Text(
                     text = "contrasena",
                     color = MaterialTheme.colorScheme.onPrimary,
@@ -191,11 +196,18 @@ fun RegistroFrame() {
                 }
                 Spacer(modifier = Modifier.height(20.dp) )
                 OutlinedButton(
-                    onClick = {Registrar (correo,contrasena){ success ->
-                        if (success){
-                            Toast.makeText(context, "Usuario registrado", Toast.LENGTH_SHORT).show()
-                        }else{
-                            Toast.makeText(context, "Error", Toast.LENGTH_SHORT).show()
+                    onClick = {
+                        verificarCorreoEnFirebase(correo) { existe ->
+                            if (existe) {
+                                Toast.makeText(context, "❌ Este correo ya está registrado.", Toast.LENGTH_SHORT).show()
+                            }else{
+                                Registrar (correo,contrasena){ success ->
+                                    if (success){
+                                        Toast.makeText(context, "Usuario registrado", Toast.LENGTH_SHORT).show()
+                                    }else{
+                                        Toast.makeText(context, "❌ Este correo ya está registrado.", Toast.LENGTH_SHORT).show()
+                                    }
+                            }
                         }
 
                     }
@@ -220,8 +232,11 @@ fun RegistroFrame() {
                     )
 
                 }
-            }        }
+            }
+        }
+
     }
+
 }
 
 fun Registrar(correo: String, contrasena: String, onResult: (Boolean) -> Unit) {
@@ -252,6 +267,19 @@ fun validarCorreo(correo: String): List<String> {
     return erroresCorreo
 }
 
+
+fun verificarCorreoEnFirebase(correo: String, callback: (Boolean) -> Unit) {
+    val auth = FirebaseAuth.getInstance()
+    auth.fetchSignInMethodsForEmail(correo)
+        .addOnCompleteListener { task ->
+            if (task.isSuccessful) {
+                val signInMethods = task.result?.signInMethods
+                callback(!signInMethods.isNullOrEmpty()) // Si hay métodos, el correo existe
+            } else {
+                callback(false) // Error en la consulta o correo no registrado
+            }
+        }
+}
 
 @Preview(showBackground = true)
 @Composable
