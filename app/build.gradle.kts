@@ -51,6 +51,7 @@ dependencies {
     implementation("com.google.firebase:firebase-analytics")
     implementation("com.google.firebase:firebase-auth:23.2.0")
     implementation("androidx.compose.material3:material3:1.2.0") // Usa la última versión
+    implementation("com.google.firebase:firebase-firestore:25.1.3")
 
     implementation(platform(libs.firebase.bom))
     implementation(libs.firebase.crashlytics)

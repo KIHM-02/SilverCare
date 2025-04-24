@@ -58,6 +58,7 @@ import androidx.compose.material3.Card
 import androidx.compose.ui.text.input.*
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.window.Dialog
+import androidx.core.content.ContextCompat.startActivity
 import com.google.firebase.auth.FirebaseAuth
 import com.hesdi.silvercare.views.Home
 import com.hesdi.silvercare.views.Registro
@@ -72,6 +73,16 @@ class Login : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             LoginFrame()
+        }
+    }
+    override fun onStart() {
+        super.onStart()
+        val user = FirebaseAuth.getInstance().currentUser
+        if (user != null) {
+            // El usuario ya ha iniciado sesión, redirigir a Home
+            val intent = Intent(this, Home::class.java)
+            startActivity(intent)
+            finish()
         }
     }
 }
@@ -265,6 +276,8 @@ fun showAlert(
         }
     }
 }
+
+
 @Preview(showBackground = true)
 @Composable
 fun LoginPreview() {
