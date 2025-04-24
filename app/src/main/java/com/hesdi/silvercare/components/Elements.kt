@@ -28,6 +28,7 @@ import androidx.compose.material3.TimeInput
 import androidx.compose.material3.TimePickerDefaults
 import androidx.compose.material3.rememberTimePickerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -46,6 +47,7 @@ import coil.compose.rememberAsyncImagePainter
 import coil.request.ImageRequest
 import com.hesdi.silvercare.R
 import com.hesdi.silvercare.ui.theme.amarillo
+import com.hesdi.silvercare.ui.theme.verde
 import java.util.Calendar
 
 /* Texto usado para titulos */
@@ -104,8 +106,8 @@ fun OutlinedInputs(title: String, text: String, onValueChange: (String) -> Unit)
             focusedLabelColor = Color.White,
             unfocusedLabelColor = Color.White,
             focusedIndicatorColor = Color.White,
-            unfocusedIndicatorColor = amarillo,
-            cursorColor = Color.Yellow
+            unfocusedIndicatorColor = Color.White,
+            cursorColor = Color.White
         )
     )
 }
@@ -197,16 +199,24 @@ fun ImagePicker()
 */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun selectorHora(): String {
+fun SelectorHora(
+    horaSeleccionada: String,
+    onHoraSeleccionada: (String) -> Unit
+) {
     val currentTime = Calendar.getInstance()
     val timePickerState = rememberTimePickerState(
         initialHour = currentTime.get(Calendar.HOUR_OF_DAY),
         initialMinute = currentTime.get(Calendar.MINUTE),
         is24Hour = true,
     )
-    var horaFormateada = ""
 
-    // Caja blanca con esquinas redondeadas
+    val horaFormateada = String.format("%02d:%02d", timePickerState.hour, timePickerState.minute)
+
+    // Actualiza el valor en cada recomposición (opcional)
+    LaunchedEffect(timePickerState.hour, timePickerState.minute) {
+        onHoraSeleccionada(horaFormateada)
+    }
+
     Box(
         modifier = Modifier
             .fillMaxWidth(0.9f)
@@ -230,16 +240,15 @@ fun selectorHora(): String {
             TimeInput(
                 state = timePickerState,
                 colors = TimePickerDefaults.colors(
-                    clockDialColor = Color.Green, // fondo del reloj
-                    clockDialSelectedContentColor = Color.Black, // número seleccionado
-                    clockDialUnselectedContentColor = Color.Yellow, // números no seleccionados
-                    periodSelectorSelectedContainerColor = Color.Green, // AM/PM fondo seleccionado
-                    periodSelectorUnselectedContainerColor = Color.Yellow // AM/PM fondo no seleccionado
-                ))
+                    clockDialColor = Color.Green,
+                    clockDialSelectedContentColor = Color.Black,
+                    clockDialUnselectedContentColor = Color.Yellow,
+                    periodSelectorSelectedContainerColor = Color.Green,
+                    periodSelectorUnselectedContainerColor = Color.Yellow
+                )
+            )
 
             SpaceTopBottom(10)
-
-            horaFormateada = String.format("%02d:%02d", timePickerState.hour, timePickerState.minute)
 
             Text(
                 text = "Hora seleccionada: $horaFormateada",
@@ -249,6 +258,4 @@ fun selectorHora(): String {
             )
         }
     }
-
-    return horaFormateada
 }
