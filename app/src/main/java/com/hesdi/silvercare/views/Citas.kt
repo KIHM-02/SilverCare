@@ -21,7 +21,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
-import com.hesdi.silvercare.LoginFrame
 import com.hesdi.silvercare.R
 import com.hesdi.silvercare.ui.theme.SilverCareTheme
 import com.hesdi.silvercare.ui.theme.azulCielo
@@ -249,7 +248,7 @@ fun AppointmentCard(
                 )
                 IconButton(onClick = onDelete) {
                     Icon(
-                        painter = painterResource(id = R.drawable.ic_visibility_off),
+                        painter = painterResource(id = R.drawable.baseline_delete_forever_24),
                         contentDescription = "Eliminar cita",
                         tint = Color.Black
                     )
@@ -304,5 +303,4 @@ fun CitasPreview() {
     SilverCareTheme {
         CitasFrame()
     }
-
 }
