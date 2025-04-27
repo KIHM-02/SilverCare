@@ -11,14 +11,15 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
@@ -40,6 +41,8 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -47,7 +50,6 @@ import coil.compose.rememberAsyncImagePainter
 import coil.request.ImageRequest
 import com.hesdi.silvercare.R
 import com.hesdi.silvercare.ui.theme.amarillo
-import com.hesdi.silvercare.ui.theme.verde
 import java.util.Calendar
 
 /* Texto usado para titulos */
@@ -64,6 +66,18 @@ fun TextosSimples(text: String, color: Color)
 }
 
 @Composable
+fun TextosPequenios(text: String, color: Color)
+{
+    Text(
+        text = text,
+        color = color,
+        style = MaterialTheme.typography.bodyLarge,
+        fontWeight = FontWeight.Bold,
+        fontSize = 18.sp
+    )
+}
+
+@Composable
 fun Titulo(text: String) {
     Text(
         text = text,
@@ -73,6 +87,19 @@ fun Titulo(text: String) {
         textAlign = TextAlign.Center,
         fontFamily = FontFamily.Cursive
     )
+}
+
+@Composable
+fun Divisor(topSpace: Int, bottomSpace: Int, color: Color) {
+    Column (
+        verticalArrangement = Arrangement.spacedBy(8.dp),
+        modifier = Modifier
+            .padding(horizontal = 35.dp)
+    ){
+        SpaceTopBottom(topSpace)
+        HorizontalDivider(thickness = 2.dp, color = color)
+        SpaceTopBottom(bottomSpace)
+    }
 }
 
 /*
@@ -94,6 +121,42 @@ fun OutlinedInputs(title: String, text: String, onValueChange: (String) -> Unit)
     OutlinedTextField(
         value = text,
         onValueChange = onValueChange,
+        label = {
+            TextosSimples(text = title, amarillo)
+        },
+        maxLines = 1,
+        colors = TextFieldDefaults.colors(
+            focusedTextColor = Color.White,
+            unfocusedTextColor = Color.White,
+            focusedContainerColor = Color.Transparent,
+            unfocusedContainerColor = Color.Transparent,
+            focusedLabelColor = Color.White,
+            unfocusedLabelColor = Color.White,
+            focusedIndicatorColor = Color.White,
+            unfocusedIndicatorColor = Color.White,
+            cursorColor = Color.White
+        )
+    )
+}
+
+/*
+* lee una cadena de texto y la muestra en la pantalla, permitiendo almacenar el valor en el metodo
+* Desde fuera se controla este metodo, es decir, no envias el valor mutable, sino que lo manejas desde
+* fuera
+ */
+@Composable
+fun OutlinedNumberInput(title: String, number: TextFieldValue, onNumberChange: (TextFieldValue) -> Unit)
+{
+    OutlinedTextField(
+        value = number,
+        onValueChange = {
+            if (it.text.all(Char::isDigit)){
+                onNumberChange(it)
+            }
+        },
+        keyboardOptions = KeyboardOptions(
+            keyboardType = KeyboardType.Number
+        ),
         label = {
             TextosSimples(text = title, amarillo)
         },
@@ -194,13 +257,10 @@ fun ImagePicker()
 
 }
 
-/* Es un selector de hora que retorna un string con la hora seleccionada
-* el formato es de 24 horas
-*/
+/* Permite seleccionar una hora y mostrarla en la pantalla */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SelectorHora(
-    horaSeleccionada: String,
     onHoraSeleccionada: (String) -> Unit
 ) {
     val currentTime = Calendar.getInstance()
