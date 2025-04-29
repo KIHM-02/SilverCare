@@ -57,7 +57,7 @@ class Home : ComponentActivity() {
                         startActivity(intent)
                     },
                     onNavigatetoRecordatorios = {
-                        val intent = Intent(this, Medicamento::class.java)
+                        val intent = Intent(this, Recordatorios::class.java)
                         startActivity(intent)
                     },
                     onNavigatetoCitas = {
@@ -81,40 +81,47 @@ fun HomeFrame(
     onNavigatetoCitas: () -> Unit = {},
     onNavigatetoSOS: () -> Unit = {}
 ) {
-    Box(modifier = Modifier
-        .fillMaxSize()
-        .background(
-            Brush.verticalGradient(
-                colors = listOf(
-                    azulRey, azulCielo
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(
+                Brush.verticalGradient(
+                    colors = listOf(
+                        azulRey, azulCielo
+                    )
                 )
             )
-        ),
-        contentAlignment = Alignment.Center
     ) {
         Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(20.dp),
-            modifier = Modifier.padding(16.dp)
-        ){
-            SeccionPerfil(
-                onNavigate = onNavigatetoLogin
-            )
-            MenuBotones(
-                text = "Recordatorios",
-                iconRes = R.drawable.baseline_access_time_24,
-                onClick = onNavigatetoRecordatorios
-            )
-            MenuBotones(
-                text = "Citas médicas",
-                iconRes = R.drawable.baseline_calendar_month_24,
-                onClick = onNavigatetoCitas
-            )
-            MenuBotones(
-                text = "SOS",
-                iconRes = R.drawable.baseline_sos_24,
-                onClick = onNavigatetoSOS
-            )
+            modifier = Modifier.fillMaxSize()
+        ) {
+            SeccionPerfil(onNavigate = onNavigatetoLogin)
+            Spacer(modifier = Modifier.weight(1f))
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.spacedBy(20.dp),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp)
+            ) {
+                MenuBotones(
+                    text = "Recordatorios",
+                    iconRes = R.drawable.baseline_access_time_24,
+                    onClick = onNavigatetoRecordatorios
+                )
+                MenuBotones(
+                    text = "Citas médicas",
+                    iconRes = R.drawable.baseline_calendar_month_24,
+                    onClick = onNavigatetoCitas
+                )
+                MenuBotones(
+                    text = "SOS",
+                    iconRes = R.drawable.baseline_sos_24,
+                    onClick = onNavigatetoSOS
+                )
+            }
+            // Espaciador inferior para mantener centrado
+            Spacer(modifier = Modifier.weight(1f))
         }
     }
 }

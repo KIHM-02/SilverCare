@@ -38,6 +38,11 @@
             android:label="Medicamento"
             android:theme="@style/Theme.SilverCare" />
         <activity
+            android:name=".views.Recordatorios"
+            android:exported="false"
+            android:label="Recordatorios"
+            android:theme="@style/Theme.SilverCare" />
+        <activity
             android:name=".views.Home"
             android:exported="false"
             android:label="@string/title_activity_home"
