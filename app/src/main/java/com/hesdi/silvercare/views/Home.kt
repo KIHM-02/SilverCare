@@ -57,11 +57,11 @@ class Home : ComponentActivity() {
                         startActivity(intent)
                     },
                     onNavigatetoRecordatorios = {
-                        val intent = Intent(this, Recordatorios::class.java)
+                        val intent = Intent(this, Medicamento::class.java)
                         startActivity(intent)
                     },
                     onNavigatetoCitas = {
-                        val intent = Intent(this, AgendarCita::class.java)
+                        val intent = Intent(this, ListCitas::class.java)
                         startActivity(intent)
                     },
                     onNavigatetoSOS = {
