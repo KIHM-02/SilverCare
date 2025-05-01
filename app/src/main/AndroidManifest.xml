@@ -33,7 +33,7 @@
             android:label="@string/title_activity_agendar_cita"
             android:theme="@style/Theme.SilverCare" />
         <activity
-            android:name=".views.Medicamento"
+            android:name=".views.MedicamentoView"
             android:exported="false"
             android:label="Medicamento"
             android:theme="@style/Theme.SilverCare" />
@@ -53,7 +53,7 @@
             android:label="@string/title_activity_registro"
             android:theme="@style/Theme.SilverCare" />
         <activity
-            android:name=".Login"
+            android:name=".views.LoginView"
             android:exported="true"
             android:label="@string/app_name"
             android:theme="@style/Theme.SilverCare">

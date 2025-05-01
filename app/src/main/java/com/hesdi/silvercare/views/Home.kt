@@ -38,7 +38,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.hesdi.silvercare.Login
 import com.hesdi.silvercare.R
 import com.hesdi.silvercare.ui.theme.SilverCareTheme
 import com.hesdi.silvercare.ui.theme.amarillo
@@ -53,7 +52,7 @@ class Home : ComponentActivity() {
             SilverCareTheme {
                 HomeFrame(
                     onNavigatetoLogin = {
-                        val intent = Intent(this, Login::class.java)
+                        val intent = Intent(this, LoginView::class.java)
                         startActivity(intent)
                     },
                     onNavigatetoRecordatorios = {

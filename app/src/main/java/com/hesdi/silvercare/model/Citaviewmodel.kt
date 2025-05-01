@@ -1,4 +1,4 @@
-package com.hesdi.silvercare.Model
+package com.hesdi.silvercare.model
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope

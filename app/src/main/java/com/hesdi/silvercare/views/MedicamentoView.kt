@@ -1,7 +1,6 @@
 package com.hesdi.silvercare.views
 
 import android.os.Bundle
-import android.util.Log
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -52,12 +51,14 @@ import com.hesdi.silvercare.components.SpaceTopBottom
 import com.hesdi.silvercare.components.TextosPequenios
 import com.hesdi.silvercare.components.TextosSimples
 import com.hesdi.silvercare.components.Titulo
+import com.hesdi.silvercare.entities.Login
+import com.hesdi.silvercare.entities.Medicamento
 import com.hesdi.silvercare.ui.theme.SilverCareTheme
 import com.hesdi.silvercare.ui.theme.amarillo
 import com.hesdi.silvercare.ui.theme.azulCielo
 import com.hesdi.silvercare.ui.theme.azulRey
 
-class Medicamento: ComponentActivity()
+class MedicamentoView: ComponentActivity()
 {
     override fun onCreate(savedInstanceState: Bundle?)
     {
@@ -65,7 +66,7 @@ class Medicamento: ComponentActivity()
         enableEdgeToEdge()
         setContent {
             SilverCareTheme {
-                MedicamentoView()
+                MedicamentoFrame()
             }
         }
     }
@@ -73,10 +74,10 @@ class Medicamento: ComponentActivity()
 
 
 @Composable
-fun MedicamentoView()
+fun MedicamentoFrame()
 {
     val context = LocalContext.current
-    var medicamento by remember { mutableStateOf("") }
+    var nombre by remember { mutableStateOf("") }
     var periodo by remember { mutableStateOf(TextFieldValue()) }
     var hora by remember {mutableStateOf("")}
     var expanded by remember { mutableStateOf(false) }
@@ -106,7 +107,7 @@ fun MedicamentoView()
             SpaceTopBottom(30)
 
             //OutlinedInputs("Medicamento","Registrar medicamento")
-            OutlinedInputs("Medicamento",medicamento) {medicamento = it}
+            OutlinedInputs("Medicamento",nombre) {nombre = it}
 
             SpaceTopBottom(40)
 
@@ -184,17 +185,18 @@ fun MedicamentoView()
 
             SpaceTopBottom(40)
 
-            SelectorHora() {hora = it }
+            SelectorHora{hora = it }
 
             SpaceTopBottom(40)
 
             Button(
                 onClick = {
-                    Toast.makeText(context, medicamento, Toast.LENGTH_SHORT).show()
-                    Log.d("------------------>>>> Medicamento: ",medicamento)
-                    Log.d("------------------>>>> Caducidad: ",periodo.text)
-                    Log.d("------------------>>>> Formato: ",formato)
-                    Log.d("------------------>>>> Hora: ",hora)
+                    callInsertData(context, nombre, formato, periodo, hora)
+                    //Reseteamos campos
+                    nombre = ""
+                    periodo = TextFieldValue()
+                    hora = ""
+                    formato = ""
                 },
                 colors = ButtonDefaults.buttonColors(
                     containerColor = amarillo,
@@ -206,6 +208,30 @@ fun MedicamentoView()
             SpaceTopBottom(50)
         }
     }
+}
+
+fun callInsertData(
+    context: android.content.Context,
+    nombre: String,
+    formato: String,
+    periodo: TextFieldValue,
+    hora: String,
+) {
+    val userId = Login().getUserId()
+    val medicamento = Medicamento()
+    val resultado = medicamento.insertData(
+        nombre,
+        "",
+        formato,
+        periodo.text.toInt(),
+        hora,
+        userId.toString()
+    )
+
+    if (resultado)
+        Toast.makeText(context, "Medicamento registrado", Toast.LENGTH_SHORT).show()
+    else
+        Toast.makeText(context, "Error al registrar el medicamento", Toast.LENGTH_SHORT).show()
 }
 
 @Preview(
@@ -222,6 +248,6 @@ fun MedicamentoView()
 fun PruebaPreview()
 {
     SilverCareTheme {
-        MedicamentoView()
+        MedicamentoFrame()
     }
 }

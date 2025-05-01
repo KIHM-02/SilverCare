@@ -47,7 +47,7 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.hesdi.silvercare.Model.Citaviewmodel
+import com.hesdi.silvercare.model.Citaviewmodel
 import com.hesdi.silvercare.R
 import com.hesdi.silvercare.components.SpaceTopBottom
 import com.hesdi.silvercare.components.Titulo

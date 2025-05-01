@@ -1,4 +1,4 @@
-package com.hesdi.silvercare
+package com.hesdi.silvercare.views
 
 import android.content.Intent
 import android.os.Bundle
@@ -16,13 +16,12 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -43,41 +42,35 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.hesdi.silvercare.R
+import com.hesdi.silvercare.entities.Login
 import com.hesdi.silvercare.ui.theme.SilverCareTheme
 import com.hesdi.silvercare.ui.theme.amarillo
 import com.hesdi.silvercare.ui.theme.azulCielo
 import com.hesdi.silvercare.ui.theme.azulRey
-import kotlin.jvm.java
-import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material3.Card
-import androidx.compose.ui.text.input.*
-import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.window.Dialog
-import androidx.core.content.ContextCompat.startActivity
-import com.google.firebase.auth.FirebaseAuth
-import com.hesdi.silvercare.views.Home
-import com.hesdi.silvercare.views.Registro
 
 
-class Login : ComponentActivity() {
+val login = Login()
 
-
+class LoginView : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            LoginFrame()
+            LoginFrame(login)
         }
     }
     override fun onStart() {
         super.onStart()
-        val user = FirebaseAuth.getInstance().currentUser
+        val user = login.getUserId()
         if (user != null) {
             // El usuario ya ha iniciado sesión, redirigir a Home
             val intent = Intent(this, Home::class.java)
@@ -88,16 +81,14 @@ class Login : ComponentActivity() {
 }
 
 @Composable
-fun LoginFrame() {
+fun LoginFrame(login: Login) {
 
     SilverCareTheme {
         var correo by remember { mutableStateOf("")}
-        var contraseña by remember { mutableStateOf("")}
+        var contrasenia by remember { mutableStateOf("")}
         var passwordVisible by remember { mutableStateOf(false) }
-        var showDialog by remember { mutableStateOf(false) }
 
         val context = LocalContext.current
-        val Inicio_sesion= correo.isEmpty() && contraseña.isEmpty()
 
         Box(modifier = Modifier
             .fillMaxSize()
@@ -149,8 +140,8 @@ fun LoginFrame() {
                     fontSize = 25.sp
                 )
                 OutlinedTextField(
-                    value = contraseña,
-                    onValueChange = { contraseña = it },
+                    value = contrasenia,
+                    onValueChange = { contrasenia = it },
                     label = { Text("Ingresar contraseña", color = Color.White, fontSize = 20.sp) },
                     textStyle = TextStyle(color = Color.White),
                     visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
@@ -168,7 +159,7 @@ fun LoginFrame() {
                     }
                 )
                 Spacer(modifier = Modifier.height(10.dp))
-                Row(){
+                Row{
                     Text(
                         text="Se te olvido tu contraseña",
                         fontSize = 15.sp,
@@ -185,8 +176,7 @@ fun LoginFrame() {
                         )
                 }
                 Spacer(modifier = Modifier.height(20.dp) )
-                Row (
-                ){
+                Row{
                     Text(
                         text = "Aun no tienes cuenta?",
                         fontSize = 20.sp,
@@ -213,7 +203,8 @@ fun LoginFrame() {
                 }
                 Spacer(modifier = Modifier.height(20.dp) )
                 OutlinedButton(
-                    onClick = {IniciarSesion(correo,contraseña) {success ->
+                    onClick = {
+                        login.iniciarSesion(correo,contrasenia) { success ->
                         if(success){
                             val intentHome = Intent(context,Home::class.java)
                             context.startActivity(intentHome)
@@ -245,44 +236,11 @@ fun LoginFrame() {
     }
 }
 
-fun IniciarSesion(correo: String, contraseña: String, onResult: (Boolean) -> Unit) {
-    FirebaseAuth.getInstance().signInWithEmailAndPassword(correo, contraseña)
-        .addOnCompleteListener { task ->
-            onResult(task.isSuccessful) // Retorna true si es exitoso, false si falla
-        }
-}
-
-
-
-@Composable
-fun showAlert(
-    onDismissRequest: () -> Unit,
-    ){
-    Dialog(onDismissRequest = { onDismissRequest() }) {
-        Card(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(200.dp)
-                .padding(16.dp),
-            shape = RoundedCornerShape(16.dp),
-        ) {
-            Text(
-                text = "Correo o contraseña incorrecto",
-                modifier = Modifier
-                    .fillMaxSize()
-                    .wrapContentSize(Alignment.Center),
-                textAlign = TextAlign.Center,
-            )
-        }
-    }
-}
-
-
 @Preview(showBackground = true)
 @Composable
 fun LoginPreview() {
     SilverCareTheme {
-        LoginFrame()
+        LoginFrame(login)
     }
 
 }
