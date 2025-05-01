@@ -59,7 +59,7 @@ fun MedicamentosScreen() {
         // Botón superior
         Button(
             onClick = {
-                val intent = Intent(context, Medicamento::class.java)
+                val intent = Intent(context, MedicamentoView::class.java)
                 context.startActivity(intent)
             },
             colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFA3C525)),

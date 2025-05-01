@@ -49,7 +49,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import com.hesdi.silvercare.Model.Citaviewmodel
+import com.hesdi.silvercare.model.Citaviewmodel
 import com.hesdi.silvercare.R
 import com.hesdi.silvercare.components.OutlinedInputs
 import com.hesdi.silvercare.components.SelectorHora
