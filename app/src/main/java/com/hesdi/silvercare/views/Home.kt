@@ -39,14 +39,21 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.hesdi.silvercare.R
+import com.hesdi.silvercare.entities.Canal_Notificacion
 import com.hesdi.silvercare.ui.theme.SilverCareTheme
 import com.hesdi.silvercare.ui.theme.amarillo
 import com.hesdi.silvercare.ui.theme.azulCielo
 import com.hesdi.silvercare.ui.theme.azulRey
 
-class Home : ComponentActivity() {
-    override fun onCreate(savedInstanceState: Bundle?) {
+class Home : ComponentActivity()
+{
+    override fun onCreate(savedInstanceState: Bundle?)
+    {
         super.onCreate(savedInstanceState)
+
+        val notificationChannel = Canal_Notificacion()
+        notificationChannel.createChannel(this)
+
         enableEdgeToEdge()
         setContent {
             SilverCareTheme {
