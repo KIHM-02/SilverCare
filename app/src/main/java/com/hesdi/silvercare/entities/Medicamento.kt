@@ -15,7 +15,6 @@ import androidx.core.content.ContextCompat
 import com.google.firebase.Firebase
 import com.google.firebase.firestore.firestore
 import com.hesdi.silvercare.model.AlarmReceiver
-import com.hesdi.silvercare.model.AlarmReceiver.Companion.NOTIFICATION_ID
 
 class Medicamento(
     private var nombre: String = "",
@@ -53,20 +52,54 @@ class Medicamento(
 
     fun scheduleNotification(context: Context)
     {
-        val intent = Intent(context, AlarmReceiver::class.java)
-        val pendingIntent = PendingIntent.getBroadcast(
-            context,
-            NOTIFICATION_ID,
-            intent,
-            PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
-        )
-
         val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
-        alarmManager.setExactAndAllowWhileIdle(
-            AlarmManager.RTC_WAKEUP,
-            Calendar.getInstance().timeInMillis + 15000,
-            pendingIntent
-        )
+        val startMillis = parseHoraToMillis(hora)
+
+        for (i in 0..periodo step intervalo)
+        { // periodo = días del tratamiento
+            val triggerTime = startMillis + (i * 24 * 60 * 60 * 1000L)
+
+            val intent = Intent(context, AlarmReceiver::class.java).apply {
+                putExtra("nombre", nombre)
+            }
+
+            val pendingIntent = PendingIntent.getBroadcast(
+                context,
+                generateRequestCode(i), // Único para cada día
+                intent,
+                PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
+            )
+
+            alarmManager.setExactAndAllowWhileIdle(
+                AlarmManager.RTC_WAKEUP,
+                triggerTime,
+                pendingIntent
+            )
+        }
+    }
+
+    fun parseHoraToMillis(hora: String): Long
+    {
+        val parts = hora.split(":")
+        val horaInt = parts[0].toInt()
+        val minutoInt = parts[1].toInt()
+
+        val calendar = Calendar.getInstance().apply {
+            set(Calendar.HOUR_OF_DAY, horaInt)
+            set(Calendar.MINUTE, minutoInt)
+            set(Calendar.SECOND, 0)
+            set(Calendar.MILLISECOND, 0)
+
+            if (timeInMillis < System.currentTimeMillis()) {
+                add(Calendar.DAY_OF_MONTH, 1) // Si es para hoy y ya pasó, agendar mañana
+            }
+        }
+
+        return calendar.timeInMillis
+    }
+
+    fun generateRequestCode(dia: Int): Int {
+        return (nombre + dia.toString()).hashCode() // Puedes incluir `userId` también si hace falta
     }
 
     fun verifyAlarmManager(context: Context): Boolean
@@ -104,6 +137,4 @@ class Medicamento(
         }
         return true
     }
-
-
 }
