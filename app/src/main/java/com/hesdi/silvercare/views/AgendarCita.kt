@@ -1,14 +1,12 @@
 package com.hesdi.silvercare.views
 
-import android.content.ContentValues
-import android.content.Context
 import android.Manifest
+import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
 import android.provider.CalendarContract
 import android.util.Log
-import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -24,7 +22,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
-
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.DatePicker
@@ -33,8 +30,6 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
@@ -48,31 +43,29 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import com.hesdi.silvercare.IniciarSesion
-import com.hesdi.silvercare.Model.Citaviewmodel
+import com.hesdi.silvercare.model.Citaviewmodel
+import com.hesdi.silvercare.R
+import com.hesdi.silvercare.components.OutlinedInputs
+import com.hesdi.silvercare.components.SelectorHora
+import com.hesdi.silvercare.components.SpaceBetween
+import com.hesdi.silvercare.components.SpaceTopBottom
+import com.hesdi.silvercare.components.TextosSimples
+import com.hesdi.silvercare.components.Titulo
+import com.hesdi.silvercare.entities.Cita
+import com.hesdi.silvercare.ui.theme.SilverCareTheme
+import com.hesdi.silvercare.ui.theme.amarillo
 import com.hesdi.silvercare.ui.theme.azulCielo
 import com.hesdi.silvercare.ui.theme.azulRey
-import com.hesdi.silvercare.ui.theme.SilverCareTheme
-import com.hesdi.silvercare.components.*
-import com.hesdi.silvercare.R
-import com.hesdi.silvercare.entities.Cita
-import com.hesdi.silvercare.ui.theme.amarillo
 import java.text.SimpleDateFormat
-import java.time.Instant
-import java.time.ZoneId
 import java.util.Date
 import java.util.Locale
 import java.util.TimeZone
-
 
 
 class AgendarCita : ComponentActivity() {
@@ -179,7 +172,7 @@ fun CitaScreen() {
                         TextosSimples("hora", Color.White,)
                         Spacer(modifier = Modifier.width(15.dp))
                         Icon(
-                            painter = painterResource(id = R.drawable.time),
+                            painter = painterResource(id = R.drawable.time2),
                             contentDescription = "Imagen de calendario"
 
                         )
@@ -220,7 +213,7 @@ fun CitaScreen() {
                 }
             }
             if (showHora) {
-                SelectorHora(hora) { hora = it }
+                SelectorHora() { hora = it }
 
             }
 
