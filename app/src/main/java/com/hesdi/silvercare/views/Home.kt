@@ -52,7 +52,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 
-
 class Home : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -75,6 +74,10 @@ class Home : ComponentActivity() {
                     onNavigatetoSOS = {
                         //val intent = Intent(this, SOS::class.java)
                         //startActivity(intent)
+                    },
+                    onNavigateToCambiarContrasena = {
+                        val intent = Intent(this, NewPassword::class.java)
+                        startActivity(intent)
                     }
                 )
             }
@@ -87,7 +90,8 @@ fun HomeFrame(
     onNavigatetoLogin: () -> Unit = {},
     onNavigatetoRecordatorios: () -> Unit = {},
     onNavigatetoCitas: () -> Unit = {},
-    onNavigatetoSOS: () -> Unit = {}
+    onNavigatetoSOS: () -> Unit = {},
+    onNavigateToCambiarContrasena: () -> Unit = {}
 ) {
     Box(modifier = Modifier
         .fillMaxSize()
@@ -107,7 +111,7 @@ fun HomeFrame(
         ){
             SeccionPerfil(
                 onNavigateToLogin = onNavigatetoLogin,
-                onNavigateToCambiarContrasena = {}
+                onNavigateToCambiarContrasena = onNavigateToCambiarContrasena
             )
 
             MenuBotones(
@@ -160,23 +164,17 @@ fun SeccionPerfil(
                 )
             }
 
-            androidx.compose.material3.DropdownMenu(
+            DropdownMenu(
                 expanded = expanded,
                 onDismissRequest = { expanded = false }
             ) {
-                androidx.compose.material3.DropdownMenuItem(
+                DropdownMenuItem(
                     text = { Text("Cambiar contraseña") },
-                    onClick = {
-                        expanded = false
-                        onNavigateToCambiarContrasena()
-                    }
+                    onClick = onNavigateToCambiarContrasena
                 )
-                androidx.compose.material3.DropdownMenuItem(
+                DropdownMenuItem(
                     text = { Text("Cerrar sesión") },
-                    onClick = {
-                        expanded = false
-                        onNavigateToLogin()
-                    }
+                    onClick = onNavigateToLogin
                 )
             }
         }
@@ -218,8 +216,6 @@ fun MenuBotones(
         }
     }
 }
-
-
 
 @Preview(showBackground = true)
 @Composable

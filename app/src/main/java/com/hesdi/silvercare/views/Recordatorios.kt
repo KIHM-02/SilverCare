@@ -107,7 +107,6 @@ fun MedicamentosScreen() {
             }
         }
 
-
         // Botón de regreso
         IconButton(
             onClick = { /* Regresar:)*/ },
@@ -156,7 +155,7 @@ fun MedicamentoCard(med: Medicamento) {
 
 fun cargarMedicamentos(userId: String, onMedicamentosCargados: (List<Medicamento>) -> Unit) {
     val db = Firebase.firestore
-    db.collection("medicamentos")
+    db.collection("Medicamento")
         .whereEqualTo("id_usuario", userId)
         .get()
         .addOnSuccessListener { result ->

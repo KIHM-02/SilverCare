@@ -31,6 +31,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.sp
+import com.google.firebase.Firebase
+import com.google.firebase.firestore.firestore
 import com.hesdi.silvercare.components.Divisor
 import com.hesdi.silvercare.components.ImagePicker
 import com.hesdi.silvercare.components.OutlinedInputs
@@ -60,7 +62,6 @@ class MedicamentoView: ComponentActivity()
         }
     }
 }
-
 
 @Composable
 fun MedicamentoFrame()
@@ -163,38 +164,35 @@ fun callInsertData(
     nombre: String,
     periodo: TextFieldValue,
     intervalo: TextFieldValue,
-    hora: String,
+    hora: String
 ) {
     val userId = Login().getUserId()
-    val medicamento = Medicamento(
-        nombre,
-        "",
-        periodo.text.toInt(),
-        intervalo.text.toInt(),
-        hora, userId.toString()
+    val db = Firebase.firestore
+
+    val medicamento = hashMapOf(
+        "nombre" to nombre,
+        "periodo" to periodo.text.toIntOrNull(),
+        "intervalo" to intervalo.text.toIntOrNull(),
+        "hora" to hora,
+        "id_usuario" to userId
     )
 
-    if(!medicamento.verifyAlarmManager(context))
-    {
-        Toast.makeText(context, "Necesitas habilitar los permisos de alarma", Toast.LENGTH_LONG).show()
-        return
+    if (nombre.isNotEmpty() && hora.isNotEmpty() &&
+        periodo.text.toIntOrNull() != null && intervalo.text.toIntOrNull() != null
+    ) {
+        db.collection("Medicamento")
+            .add(medicamento)
+            .addOnSuccessListener {
+                Toast.makeText(context, "Medicamento guardado con éxito", Toast.LENGTH_SHORT).show()
+            }
+            .addOnFailureListener {
+                Toast.makeText(context, "Error al guardar medicamento", Toast.LENGTH_SHORT).show()
+            }
+    } else {
+        Toast.makeText(context, "Completa todos los campos", Toast.LENGTH_SHORT).show()
     }
-    else if(!medicamento.verifyNotification(context))
-    {
-        Toast.makeText(context, "Necesitas habilitar los permisos de notificación", Toast.LENGTH_LONG).show()
-        return
-    }
-
-    val state = medicamento.insertData()
-
-    if (state)
-    {
-        medicamento.scheduleNotification(context)
-        Toast.makeText(context, "Medicamento registrado", Toast.LENGTH_SHORT).show()
-    }
-    else
-        Toast.makeText(context, "Error al registrar el medicamento", Toast.LENGTH_SHORT).show()
 }
+
 
 @Preview(
     name = "Light Mode",
