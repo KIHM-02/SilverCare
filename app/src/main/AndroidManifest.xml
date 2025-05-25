@@ -29,6 +29,11 @@
             android:enabled="true"/>
 
         <activity
+            android:name=".views.NewPassword"
+            android:exported="false"
+            android:label="NewPassword"
+            android:theme="@style/Theme.SilverCare" />
+        <activity
             android:name=".views.ListCitas"
             android:exported="false"
             android:label="ListCitas"

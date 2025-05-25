@@ -16,6 +16,7 @@ import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -25,7 +26,11 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.google.firebase.Firebase
+import com.google.firebase.firestore.firestore
 import com.hesdi.silvercare.R
+import com.hesdi.silvercare.entities.Login
+import com.hesdi.silvercare.entities.Medicamento
 import com.hesdi.silvercare.ui.theme.SilverCareTheme
 
 class Recordatorios : ComponentActivity() {
@@ -45,8 +50,15 @@ class Recordatorios : ComponentActivity() {
 @Composable
 fun MedicamentosScreen() {
     var searchQuery by remember { mutableStateOf(TextFieldValue("")) }
-    val medicamentos = List(6) { "Aquí va el medicamento" }
     val context = LocalContext.current
+    var medicamentos by remember { mutableStateOf(listOf<Medicamento>()) }
+
+    LaunchedEffect(Unit) {
+        val userId = Login().getUserId()
+        cargarMedicamentos(userId.toString()) {
+            medicamentos = it
+        }
+    }
 
     Column(
         modifier = Modifier
@@ -88,14 +100,13 @@ fun MedicamentosScreen() {
         )
 
         // Lista de medicamentos
-        LazyColumn(
-            modifier = Modifier.weight(1f)
-        ) {
-            items(medicamentos) { nombre ->
-                MedicamentoCard(nombre)
+        LazyColumn(modifier = Modifier.weight(1f)) {
+            items(medicamentos) { medicamento ->
+                MedicamentoCard(medicamento)
                 Spacer(modifier = Modifier.height(8.dp))
             }
         }
+
 
         // Botón de regreso
         IconButton(
@@ -116,7 +127,7 @@ fun MedicamentosScreen() {
 }
 
 @Composable
-fun MedicamentoCard(nombre: String) {
+fun MedicamentoCard(med: Medicamento) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -127,11 +138,10 @@ fun MedicamentoCard(nombre: String) {
             verticalAlignment = Alignment.CenterVertically
         ) {
             Column(modifier = Modifier.weight(1f)) {
-                Text(text = nombre, fontSize = 16.sp, color = Color.Black)
-                Text(text = "Aquí el nombre 100%flico", fontSize = 12.sp, color = Color.Black)
+                Text(text = med.nombre, fontSize = 16.sp, color = Color.Black)
+                Text(text = "Hora: ${med.hora}", fontSize = 12.sp, color = Color.Black)
             }
 
-            // Debo reemplazar icono por imagen
             Image(
                 painter = painterResource(id = R.drawable.ic_launcher_foreground),
                 contentDescription = "Icono medicamento",
@@ -141,6 +151,27 @@ fun MedicamentoCard(nombre: String) {
             )
         }
     }
+}
+
+
+fun cargarMedicamentos(userId: String, onMedicamentosCargados: (List<Medicamento>) -> Unit) {
+    val db = Firebase.firestore
+    db.collection("medicamentos")
+        .whereEqualTo("id_usuario", userId)
+        .get()
+        .addOnSuccessListener { result ->
+            val listaMedicamentos = mutableListOf<Medicamento>()
+            for (document in result) {
+                val nombre = document.getString("nombre") ?: ""
+                val periodo = document.getLong("periodo")?.toInt() ?: 0
+                val intervalo = document.getLong("intervalo")?.toInt() ?: 0
+                val hora = document.getString("hora") ?: ""
+                val idUsuario = document.getString("id_usuario") ?: ""
+
+                listaMedicamentos.add(Medicamento(nombre, "", periodo, intervalo, hora, idUsuario))
+            }
+            onMedicamentosCargados(listaMedicamentos)
+        }
 }
 
 
