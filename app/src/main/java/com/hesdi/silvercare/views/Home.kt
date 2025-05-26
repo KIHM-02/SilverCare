@@ -39,6 +39,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -46,6 +47,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.hesdi.silvercare.R
 import com.hesdi.silvercare.entities.Canal_Notificacion
+import com.hesdi.silvercare.entities.Login
 import com.hesdi.silvercare.ui.theme.SilverCareTheme
 import com.hesdi.silvercare.ui.theme.amarillo
 import com.hesdi.silvercare.ui.theme.azulCielo
@@ -66,7 +68,9 @@ class Home : ComponentActivity()
                 HomeFrame(
                     onNavigatetoLogin = {
                         val intent = Intent(this, LoginView::class.java)
+                        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
                         startActivity(intent)
+                        finish()
                     },
                     onNavigatetoRecordatorios = {
                         val intent = Intent(this, Recordatorios::class.java)
@@ -115,8 +119,8 @@ fun HomeFrame(
             modifier = Modifier.padding(16.dp)
         ){
             SeccionPerfil(
-                onNavigateToLogin = onNavigatetoLogin,
-                onNavigateToCambiarContrasena = onNavigateToCambiarContrasena
+                onNavigateToCambiarContrasena = onNavigateToCambiarContrasena,
+                onNavigateToLogin = onNavigatetoLogin
             )
 
             MenuBotones(
@@ -145,6 +149,8 @@ fun SeccionPerfil(
     onNavigateToCambiarContrasena: () -> Unit
 ) {
     var expanded by remember { mutableStateOf(false) }
+    val context = LocalContext.current
+    val login = Login()
 
     Row(
         modifier = Modifier
@@ -179,7 +185,10 @@ fun SeccionPerfil(
                 )
                 DropdownMenuItem(
                     text = { Text("Cerrar sesión") },
-                    onClick = onNavigateToLogin
+                    onClick = {
+                        login.cerrarSesion()
+                        onNavigateToLogin
+                    }
                 )
             }
         }
