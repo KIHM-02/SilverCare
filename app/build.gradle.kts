@@ -45,11 +45,13 @@ android {
 
 dependencies {
     // Permite previsualizar la imagen de los medicamentos
-    implementation("io.coil-kt:coil-compose:2.2.2")
+    implementation(libs.coil.compose)
+    implementation(libs.kotlinx.coroutines.play.services)
 
-    implementation("com.google.firebase:firebase-analytics")
-    implementation("com.google.firebase:firebase-auth:23.2.0")
-    implementation("androidx.compose.material3:material3:1.2.0") // Usa la última versión
+
+    implementation(libs.firebase.analytics)
+    implementation(libs.firebase.auth)
+    implementation(libs.material3) // Usa la última versión
     implementation(libs.firebase.firestore)
 
     implementation(platform(libs.firebase.bom))

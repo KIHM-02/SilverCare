@@ -10,11 +10,13 @@ import android.content.pm.PackageManager
 import android.icu.util.Calendar
 import android.os.Build
 import android.provider.Settings
+import android.util.Log
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.google.firebase.Firebase
 import com.google.firebase.firestore.firestore
 import com.hesdi.silvercare.model.AlarmReceiver
+import kotlinx.coroutines.tasks.await
 
 class Medicamento(
     private var nombre: String = "",
@@ -22,7 +24,8 @@ class Medicamento(
     private var periodo: Int = 0,
     private var intervalo: Int = 0,
     private var hora: String = "",
-    private var userId: String = ""
+    private var userId: String = "",
+    private var documentId: String ="" //Usada para eliminar el documento de la base de datos
 ) {
 
     private val db = Firebase.firestore
@@ -48,6 +51,28 @@ class Medicamento(
             e.printStackTrace()
             false
         }
+    }
+
+    suspend fun searchData(userIdHash: String): List<Medicamento> {
+        val medicamentosList = mutableListOf<Medicamento>()
+        try {
+            val documents = db.collection("Medicamento")
+                .whereEqualTo("userId", userIdHash)
+                .get()
+                .await()
+
+            for (document in documents) {
+                val medicamento = Medicamento(
+                    nombre = document.data["nombre"].toString(),
+                    hora = document.data["hora"].toString(),
+                    documentId = document.id
+                )
+                medicamentosList.add(medicamento)
+            }
+        } catch (e: Exception) {
+            Log.w("BUSQUEDA", "Error obteniendo documentos:", e)
+        }
+        return medicamentosList
     }
 
     fun scheduleNotification(context: Context)
@@ -137,4 +162,9 @@ class Medicamento(
         }
         return true
     }
+
+    fun getNombre():String { return this.nombre }
+    fun getHora():String { return this.hora }
+    fun getDocumentId():String { return this.documentId }
+
 }

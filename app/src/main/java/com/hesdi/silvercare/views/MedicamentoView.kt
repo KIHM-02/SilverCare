@@ -1,5 +1,6 @@
 package com.hesdi.silvercare.views
 
+import android.content.Context
 import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.ComponentActivity
@@ -127,7 +128,7 @@ fun MedicamentoFrame()
             SpaceTopBottom(20)
 
             OutlinedNumberInput(
-                "¿Cada cuanto tiempo?",
+                "¿Cada cuantos dias?",
                 number = intervalo,
                 onNumberChange = { intervalo = it }
             )
@@ -158,14 +159,43 @@ fun MedicamentoFrame()
     }
 }
 
+fun validateInputs(
+    nombre: String,
+    intervalo: TextFieldValue,
+    periodo: TextFieldValue,
+    context: Context): Boolean {
+    if (periodo.text.isEmpty() || intervalo.text.isEmpty())
+    {
+        Toast.makeText(context, "El periodo y el intervalo no pueden estar vacios", Toast.LENGTH_LONG).show()
+        return false
+    }
+    if (intervalo.text.toInt() > periodo.text.toInt())
+    {
+        Toast.makeText(context, "El intervalo no puede ser mayor al periodo", Toast.LENGTH_LONG).show()
+        return false
+    }
+    else if(nombre.isEmpty())
+    {
+        Toast.makeText(context, "El nombre no puede estar vacío", Toast.LENGTH_LONG).show()
+        return false
+    }
+
+    return true
+}
+
 fun callInsertData(
-    context: android.content.Context,
+    context: Context,
     nombre: String,
     periodo: TextFieldValue,
     intervalo: TextFieldValue,
     hora: String,
 ) {
     val userId = Login().getUserId()
+
+    if(!validateInputs(nombre, intervalo, periodo, context))
+        return
+
+
     val medicamento = Medicamento(
         nombre,
         "",

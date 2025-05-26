@@ -22,17 +22,24 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -40,6 +47,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.hesdi.silvercare.R
 import com.hesdi.silvercare.entities.Canal_Notificacion
+import com.hesdi.silvercare.entities.Login
 import com.hesdi.silvercare.ui.theme.SilverCareTheme
 import com.hesdi.silvercare.ui.theme.amarillo
 import com.hesdi.silvercare.ui.theme.azulCielo
@@ -60,7 +68,9 @@ class Home : ComponentActivity()
                 HomeFrame(
                     onNavigatetoLogin = {
                         val intent = Intent(this, LoginView::class.java)
+                        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
                         startActivity(intent)
+                        finish()
                     },
                     onNavigatetoRecordatorios = {
                         val intent = Intent(this, Recordatorios::class.java)
@@ -73,6 +83,10 @@ class Home : ComponentActivity()
                     onNavigatetoSOS = {
                         //val intent = Intent(this, SOS::class.java)
                         //startActivity(intent)
+                    },
+                    onNavigateToCambiarContrasena = {
+                        val intent = Intent(this, NewPassword::class.java)
+                        startActivity(intent)
                     }
                 )
             }
@@ -85,81 +99,98 @@ fun HomeFrame(
     onNavigatetoLogin: () -> Unit = {},
     onNavigatetoRecordatorios: () -> Unit = {},
     onNavigatetoCitas: () -> Unit = {},
-    onNavigatetoSOS: () -> Unit = {}
+    onNavigatetoSOS: () -> Unit = {},
+    onNavigateToCambiarContrasena: () -> Unit = {}
 ) {
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(
-                Brush.verticalGradient(
-                    colors = listOf(
-                        azulRey, azulCielo
-                    )
+    Box(modifier = Modifier
+        .fillMaxSize()
+        .background(
+            Brush.verticalGradient(
+                colors = listOf(
+                    azulRey, azulCielo
                 )
             )
+        ),
+        contentAlignment = Alignment.Center
     ) {
         Column(
-            modifier = Modifier.fillMaxSize()
-        ) {
-            SeccionPerfil(onNavigate = onNavigatetoLogin)
-            Spacer(modifier = Modifier.weight(1f))
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.spacedBy(20.dp),
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp)
-            ) {
-                MenuBotones(
-                    text = "Recordatorios",
-                    iconRes = R.drawable.baseline_access_time_24,
-                    onClick = onNavigatetoRecordatorios
-                )
-                MenuBotones(
-                    text = "Citas médicas",
-                    iconRes = R.drawable.baseline_calendar_month_24,
-                    onClick = onNavigatetoCitas
-                )
-                MenuBotones(
-                    text = "SOS",
-                    iconRes = R.drawable.baseline_sos_24,
-                    onClick = onNavigatetoSOS
-                )
-            }
-            // Espaciador inferior para mantener centrado
-            Spacer(modifier = Modifier.weight(1f))
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(20.dp),
+            modifier = Modifier.padding(16.dp)
+        ){
+            SeccionPerfil(
+                onNavigateToCambiarContrasena = onNavigateToCambiarContrasena,
+                onNavigateToLogin = onNavigatetoLogin
+            )
+
+            MenuBotones(
+                text = "Recordatorios",
+                iconRes = R.drawable.baseline_access_time_24,
+                onClick = onNavigatetoRecordatorios
+            )
+            MenuBotones(
+                text = "Citas médicas",
+                iconRes = R.drawable.baseline_calendar_month_24,
+                onClick = onNavigatetoCitas
+            )
+            MenuBotones(
+                text = "SOS",
+                iconRes = R.drawable.baseline_sos_24,
+                onClick = onNavigatetoSOS
+            )
         }
     }
 }
 
 //Parte superior para visualizar el perfil
 @Composable
-fun SeccionPerfil(onNavigate: () -> Unit) {
+fun SeccionPerfil(
+    onNavigateToLogin: () -> Unit,
+    onNavigateToCambiarContrasena: () -> Unit
+) {
+    var expanded by remember { mutableStateOf(false) }
+    val context = LocalContext.current
+    val login = Login()
+
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .padding(16.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Icon(
-            imageVector = Icons.Default.AccountCircle,
-            contentDescription = "Icono de Perfil",
-            modifier = Modifier
-                .size(60.dp)
-                .clip(CircleShape)
-                .background(Color.White),
-            tint = Color(0xFF0F4C81)
-        )
+
         Spacer(modifier = Modifier.weight(1f))
-        IconButton(onClick = {
-            onNavigate()
-        }) {
-            Icon(
-                modifier = Modifier.size(60.dp),
-                painter = painterResource(id = R.drawable.baseline_keyboard_return_24),
-                contentDescription = "Icono regreso",
-                tint = Color(0xFFB0E000)
-            )
+
+        // IconButton con DropdownMenu
+        Box {
+            IconButton(onClick = {expanded = true}) {
+                Icon(
+                    imageVector = Icons.Default.AccountCircle,
+                    contentDescription = "Icono de Perfil",
+                    modifier = Modifier
+                        .size(60.dp)
+                        .clip(CircleShape)
+                        .background(Color.White),
+                    tint = Color(0xFF0F4C81)
+                )
+            }
+
+            DropdownMenu(
+                expanded = expanded,
+                onDismissRequest = { expanded = false }
+            ) {
+                DropdownMenuItem(
+                    text = { Text("Cambiar contraseña") },
+                    onClick = onNavigateToCambiarContrasena
+                )
+                DropdownMenuItem(
+                    text = { Text("Cerrar sesión") },
+                    onClick = {
+                        login.cerrarSesion()
+                        onNavigateToLogin
+                    }
+                )
+            }
         }
     }
 }
