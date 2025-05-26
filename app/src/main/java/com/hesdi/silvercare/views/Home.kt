@@ -115,8 +115,8 @@ fun HomeFrame(
             modifier = Modifier.padding(16.dp)
         ){
             SeccionPerfil(
-                onNavigateToLogin = onNavigatetoLogin,
-                onNavigateToCambiarContrasena = onNavigateToCambiarContrasena
+                onNavigateToCambiarContrasena = onNavigateToCambiarContrasena,
+                onNavigateToLogin = onNavigatetoLogin
             )
 
             MenuBotones(

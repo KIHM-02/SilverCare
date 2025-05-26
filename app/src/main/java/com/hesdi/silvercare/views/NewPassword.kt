@@ -18,13 +18,17 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.google.firebase.FirebaseApp
 import com.hesdi.silvercare.ui.theme.SilverCareTheme
 import com.hesdi.silvercare.ui.theme.amarillo
 import com.hesdi.silvercare.ui.theme.azulCielo
 import com.hesdi.silvercare.ui.theme.azulRey
+import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.auth.FirebaseAuth
 
 class NewPassword : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
+        FirebaseApp.initializeApp(this)
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
@@ -41,17 +45,18 @@ class NewPassword : ComponentActivity() {
         var mensaje by remember { mutableStateOf("") }
         var colorMensaje by remember { mutableStateOf(Color.Red) }
 
-        Box(modifier = Modifier
-            .fillMaxSize()
-            .background(
-                Brush.verticalGradient(
-                    colors = listOf(
-                        azulRey, azulCielo
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(
+                    Brush.verticalGradient(
+                        colors = listOf(
+                            azulRey, azulCielo
+                        )
                     )
-                )
-            ),
+                ),
             contentAlignment = Alignment.Center
-        ){
+        ) {
             Column(
                 modifier = Modifier
                     .fillMaxSize()
@@ -64,11 +69,13 @@ class NewPassword : ComponentActivity() {
                 OutlinedTextField(
                     value = nuevaContrasena,
                     onValueChange = { nuevaContrasena = it },
-                    label = { Text(
-                        text = "Nueva contraseña",
-                        color = Color.White,
-                        fontSize = 20.sp
-                    )},
+                    label = {
+                        Text(
+                            text = "Nueva contraseña",
+                            color = Color.White,
+                            fontSize = 20.sp
+                        )
+                    },
                     visualTransformation = PasswordVisualTransformation(),
                     singleLine = true
                 )
@@ -76,47 +83,62 @@ class NewPassword : ComponentActivity() {
                 OutlinedTextField(
                     value = confirmarContrasena,
                     onValueChange = { confirmarContrasena = it },
-                    label = { Text(
-                        text = "Confirma tu contraseña",
-                        color = Color.White,
-                        fontSize = 20.sp
-                    )},
+                    label = {
+                        Text(
+                            text = "Confirma tu contraseña",
+                            color = Color.White,
+                            fontSize = 20.sp
+                        )
+                    },
                     visualTransformation = PasswordVisualTransformation(),
                     singleLine = true
                 )
 
-                Button(onClick = {
-                    if (nuevaContrasena.isBlank() || confirmarContrasena.isBlank()) {
-                        mensaje = "Por favor llena todos los campos"
-                        colorMensaje = Color.Red
-                    } else if (nuevaContrasena != confirmarContrasena) {
-                        mensaje = "Las contraseñas no coinciden"
-                        colorMensaje = Color.Red
-                    } else {
-                        mensaje = "Contraseña actualizada correctamente"
-                        colorMensaje = Color(0xFF4CAF50)
-                    }
-                }, modifier = Modifier.padding(15.dp)
-                    .border(2.dp, Color.Transparent, RoundedCornerShape(12.dp))
-                    .width(300.dp),
-                    colors = ButtonDefaults.outlinedButtonColors(
-                    containerColor = amarillo,
-                    contentColor = MaterialTheme.colorScheme.onPrimary
-                )
-                ){
-                    Text("Guardar")
-                }
+                Button(
+                    onClick = {
+                        if (nuevaContrasena.isBlank() || confirmarContrasena.isBlank()) {
+                            mensaje = "Por favor llena todos los campos"
+                            colorMensaje = Color.Red
+                        } else if (nuevaContrasena != confirmarContrasena) {
+                            mensaje = "Las contraseñas no coinciden"
+                            colorMensaje = Color.Red
+                        } else {
+                            // Referencia a Firestore
+                            val db = FirebaseFirestore.getInstance()
+                            val userId = FirebaseAuth.getInstance().currentUser?.uid
 
-                if (mensaje.isNotEmpty()) {
-                    Text(
-                        text = mensaje,
-                        color = colorMensaje
+                            if (userId != null) {
+                                // Guardar contraseña en Firestore
+                                val userRef = db.collection("usuarios").document(userId)
+                                userRef.update("contrasena", nuevaContrasena)
+                                    .addOnSuccessListener {
+                                        mensaje = "Contraseña actualizada correctamente"
+                                        colorMensaje = Color(0xFF4CAF50)
+                                    }
+                                    .addOnFailureListener {
+                                        mensaje = "Error al guardar la contraseña"
+                                        colorMensaje = Color.Red
+                                    }
+                            } else {
+                                mensaje = "Usuario no autenticado"
+                                colorMensaje = Color.Red
+                            }
+                        }
+                    },
+                    modifier = Modifier.padding(15.dp)
+                        .border(2.dp, Color.Transparent, RoundedCornerShape(12.dp))
+                        .width(300.dp),
+                    colors = ButtonDefaults.outlinedButtonColors(
+                        containerColor = amarillo,
+                        contentColor = MaterialTheme.colorScheme.onPrimary
                     )
+                ) {
+                    Text("Guardar")
                 }
             }
         }
-
     }
+
     @Preview
     @Composable
     fun NewPasswordPreview() {
