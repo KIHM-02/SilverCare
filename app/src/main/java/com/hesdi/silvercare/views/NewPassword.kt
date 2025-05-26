@@ -1,5 +1,6 @@
 package com.hesdi.silvercare.views
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -18,13 +19,14 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.google.firebase.Firebase
 import com.google.firebase.FirebaseApp
 import com.hesdi.silvercare.ui.theme.SilverCareTheme
 import com.hesdi.silvercare.ui.theme.amarillo
 import com.hesdi.silvercare.ui.theme.azulCielo
 import com.hesdi.silvercare.ui.theme.azulRey
 import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.auth
 
 class NewPassword : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -103,29 +105,39 @@ class NewPassword : ComponentActivity() {
                             mensaje = "Las contraseñas no coinciden"
                             colorMensaje = Color.Red
                         } else {
-                            // Referencia a Firestore
-                            val db = FirebaseFirestore.getInstance()
-                            val userId = FirebaseAuth.getInstance().currentUser?.uid
-
-                            if (userId != null) {
-                                // Guardar contraseña en Firestore
-                                val userRef = db.collection("usuarios").document(userId)
-                                userRef.update("contrasena", nuevaContrasena)
-                                    .addOnSuccessListener {
+                            val user = Firebase.auth.currentUser
+                            if (user != null) {
+                                user.updatePassword(nuevaContrasena).addOnCompleteListener { task ->
+                                    if (task.isSuccessful) {
                                         mensaje = "Contraseña actualizada correctamente"
                                         colorMensaje = Color(0xFF4CAF50)
+
+                                        val db = FirebaseFirestore.getInstance()
+                                        val userId = user.uid
+                                        val userRef = db.collection("usuarios").document(userId)
+
+                                        userRef.update("contrasena", nuevaContrasena)
+                                            .addOnSuccessListener {
+                                                val intent =
+                                                    Intent(this@NewPassword, Home::class.java)
+                                                startActivity(intent)
+                                                finish()
+                                            }
+                                            .addOnFailureListener {
+                                                mensaje =
+                                                    "Contraseña actualizada, pero error al guardar en Firestore"
+                                                colorMensaje = Color.Yellow
+                                            }
                                     }
-                                    .addOnFailureListener {
-                                        mensaje = "Error al guardar la contraseña"
-                                        colorMensaje = Color.Red
-                                    }
+                                }
                             } else {
                                 mensaje = "Usuario no autenticado"
                                 colorMensaje = Color.Red
                             }
                         }
                     },
-                    modifier = Modifier.padding(15.dp)
+                    modifier = Modifier
+                        .padding(15.dp)
                         .border(2.dp, Color.Transparent, RoundedCornerShape(12.dp))
                         .width(300.dp),
                     colors = ButtonDefaults.outlinedButtonColors(

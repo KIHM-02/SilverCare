@@ -66,7 +66,9 @@ class Home : ComponentActivity()
                 HomeFrame(
                     onNavigatetoLogin = {
                         val intent = Intent(this, LoginView::class.java)
+                        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
                         startActivity(intent)
+                        finish()
                     },
                     onNavigatetoRecordatorios = {
                         val intent = Intent(this, Recordatorios::class.java)
