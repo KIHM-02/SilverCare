@@ -7,15 +7,34 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Search
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -26,17 +45,33 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.google.firebase.Firebase
-import com.google.firebase.firestore.firestore
 import com.hesdi.silvercare.R
 import com.hesdi.silvercare.entities.Login
 import com.hesdi.silvercare.entities.Medicamento
 import com.hesdi.silvercare.ui.theme.SilverCareTheme
 
 class Recordatorios : ComponentActivity() {
-    override fun onCreate(savedInstanceState: Bundle?) {
+    override fun onCreate(savedInstanceState: Bundle?)
+    {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+
+//        val medicamento = Medicamento()
+//        var medicamentos = medicamento.searchData(login.getUserId().toString())
+//
+//        Toast.makeText(this, "Ya me ejecuteeeee", Toast.LENGTH_SHORT).show()
+//        Log.d("CUENTA", "----------->Ya me ejecuteeeee ${login.getUserId().toString()}")
+//
+//        if(medicamentos.isEmpty())
+//        {
+//            Log.d("VALORES", "-----------> No hay medicamentos")
+//        }
+//        else {
+//            for (med in medicamentos) {
+//                Log.d("VALORES", "-----------> ${med.getNombre()}")
+//            }
+//        }
+
         setContent {
             SilverCareTheme {
                 Surface(modifier = Modifier.fillMaxSize()) {
@@ -48,16 +83,16 @@ class Recordatorios : ComponentActivity() {
 }
 
 @Composable
-fun MedicamentosScreen() {
+fun MedicamentosScreen()
+{
+    val login = Login()
     var searchQuery by remember { mutableStateOf(TextFieldValue("")) }
+    var medicamentos by remember { mutableStateOf<List<Medicamento>>(emptyList()) }
     val context = LocalContext.current
-    var medicamentos by remember { mutableStateOf(listOf<Medicamento>()) }
 
     LaunchedEffect(Unit) {
-        val userId = Login().getUserId()
-        cargarMedicamentos(userId.toString()) {
-            medicamentos = it
-        }
+        val medicamento = Medicamento()
+        medicamentos = medicamento.searchData(login.getUserId().toString())
     }
 
     Column(
@@ -100,8 +135,11 @@ fun MedicamentosScreen() {
         )
 
         // Lista de medicamentos
-        LazyColumn(modifier = Modifier.weight(1f)) {
-            items(medicamentos) { medicamento ->
+        LazyColumn(modifier = Modifier.weight(1f))
+        {
+            items(medicamentos.filter {
+                it.getNombre().contains(searchQuery.text, ignoreCase = true)
+            }) { medicamento ->
                 MedicamentoCard(medicamento)
                 Spacer(modifier = Modifier.height(8.dp))
             }
@@ -127,7 +165,7 @@ fun MedicamentosScreen() {
 }
 
 @Composable
-fun MedicamentoCard(med: Medicamento) {
+fun MedicamentoCard(medicamento: Medicamento) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -138,10 +176,11 @@ fun MedicamentoCard(med: Medicamento) {
             verticalAlignment = Alignment.CenterVertically
         ) {
             Column(modifier = Modifier.weight(1f)) {
-                Text(text = med.nombre, fontSize = 16.sp, color = Color.Black)
-                Text(text = "Hora: ${med.hora}", fontSize = 12.sp, color = Color.Black)
+                Text(text = "Medicamento: ${medicamento.getNombre()}", fontSize = 16.sp, color = Color.Black)
+                Text(text = "Hora programada: ${medicamento.getHora()}", fontSize = 12.sp, color = Color.Black)
             }
 
+            // Debo reemplazar icono por imagen
             Image(
                 painter = painterResource(id = R.drawable.ic_launcher_foreground),
                 contentDescription = "Icono medicamento",
@@ -151,27 +190,6 @@ fun MedicamentoCard(med: Medicamento) {
             )
         }
     }
-}
-
-
-fun cargarMedicamentos(userId: String, onMedicamentosCargados: (List<Medicamento>) -> Unit) {
-    val db = Firebase.firestore
-    db.collection("medicamentos")
-        .whereEqualTo("id_usuario", userId)
-        .get()
-        .addOnSuccessListener { result ->
-            val listaMedicamentos = mutableListOf<Medicamento>()
-            for (document in result) {
-                val nombre = document.getString("nombre") ?: ""
-                val periodo = document.getLong("periodo")?.toInt() ?: 0
-                val intervalo = document.getLong("intervalo")?.toInt() ?: 0
-                val hora = document.getString("hora") ?: ""
-                val idUsuario = document.getString("id_usuario") ?: ""
-
-                listaMedicamentos.add(Medicamento(nombre, "", periodo, intervalo, hora, idUsuario))
-            }
-            onMedicamentosCargados(listaMedicamentos)
-        }
 }
 
 
