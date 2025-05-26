@@ -20,4 +20,8 @@ class Login
         val currentUser = getAuth().currentUser
         return currentUser?.uid // Retorna la id del usuario, en caso de no estar logueado retorna null
     }
+
+    fun cerrarSesion() {
+        FirebaseAuth.getInstance().signOut()
+    }
 }

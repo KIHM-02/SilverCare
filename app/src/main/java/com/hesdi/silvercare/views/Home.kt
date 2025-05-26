@@ -39,6 +39,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -46,6 +47,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.hesdi.silvercare.R
 import com.hesdi.silvercare.entities.Canal_Notificacion
+import com.hesdi.silvercare.entities.Login
 import com.hesdi.silvercare.ui.theme.SilverCareTheme
 import com.hesdi.silvercare.ui.theme.amarillo
 import com.hesdi.silvercare.ui.theme.azulCielo
@@ -147,6 +149,8 @@ fun SeccionPerfil(
     onNavigateToCambiarContrasena: () -> Unit
 ) {
     var expanded by remember { mutableStateOf(false) }
+    val context = LocalContext.current
+    val login = Login()
 
     Row(
         modifier = Modifier
@@ -181,7 +185,10 @@ fun SeccionPerfil(
                 )
                 DropdownMenuItem(
                     text = { Text("Cerrar sesión") },
-                    onClick = onNavigateToLogin
+                    onClick = {
+                        login.cerrarSesion()
+                        onNavigateToLogin
+                    }
                 )
             }
         }
