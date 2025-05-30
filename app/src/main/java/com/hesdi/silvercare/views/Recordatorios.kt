@@ -46,6 +46,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.hesdi.silvercare.R
+import com.hesdi.silvercare.components.TextosPequenios
 import com.hesdi.silvercare.entities.Login
 import com.hesdi.silvercare.entities.Medicamento
 import com.hesdi.silvercare.ui.theme.SilverCareTheme
@@ -88,11 +89,14 @@ fun MedicamentosScreen()
     val login = Login()
     var searchQuery by remember { mutableStateOf(TextFieldValue("")) }
     var medicamentos by remember { mutableStateOf<List<Medicamento>>(emptyList()) }
+    var searching by remember { mutableStateOf(true) }
     val context = LocalContext.current
 
-    LaunchedEffect(Unit) {
+    LaunchedEffect(Unit)
+    {
         val medicamento = Medicamento()
         medicamentos = medicamento.searchData(login.getUserId().toString())
+        searching = false
     }
 
     Column(
@@ -130,9 +134,15 @@ fun MedicamentosScreen()
                 .padding(bottom = 16.dp),
             shape = RoundedCornerShape(12.dp),
             colors = OutlinedTextFieldDefaults.colors(
-                unfocusedContainerColor = Color.White
+                unfocusedContainerColor = Color.White,
+                focusedContainerColor = Color.White
             )
         )
+
+        if(searching)
+        {
+            TextosPequenios(text = "Buscando medicamentos registrados...", color = Color.White)
+        }
 
         // Lista de medicamentos
         LazyColumn(modifier = Modifier.weight(1f))
