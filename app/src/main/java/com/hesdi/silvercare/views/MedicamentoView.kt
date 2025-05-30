@@ -16,6 +16,8 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Checkbox
+import androidx.compose.material3.CheckboxDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -71,6 +73,7 @@ fun MedicamentoFrame()
     var periodo by remember { mutableStateOf(TextFieldValue()) }
     var intervalo by remember { mutableStateOf(TextFieldValue()) }
     var hora by remember {mutableStateOf("")}
+    var checked by remember { mutableStateOf(false)}
 
     Box(modifier = Modifier
         .fillMaxSize()
@@ -117,6 +120,30 @@ fun MedicamentoFrame()
             )
 
             SpaceTopBottom(20)
+
+            Row(
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                TextosSimples("Repetir todo el año?", Color.White)
+
+                Checkbox(
+                    colors = CheckboxDefaults.colors(
+                        checkedColor = amarillo,
+                        uncheckedColor = Color.White
+                    ),
+                    checked = checked,
+                    onCheckedChange = {
+                        checked = it
+                        if(checked) {
+                            periodo = TextFieldValue("365")
+                            intervalo = TextFieldValue("1")
+                        }else{
+                            periodo = TextFieldValue()
+                            intervalo = TextFieldValue()
+                        }
+                    }
+                )
+            }
 
             //OutlinedInputs("Periodo del tratamiento",periodo) {periodo = it}
             OutlinedNumberInput(

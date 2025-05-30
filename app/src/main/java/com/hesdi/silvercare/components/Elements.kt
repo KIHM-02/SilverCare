@@ -126,7 +126,7 @@ fun OutlinedInputs(title: String, text: String, onValueChange: (String) -> Unit)
 {
     OutlinedTextField(
         value = text,
-        onValueChange = onValueChange,
+        onValueChange = { onValueChange(it.take(30)) } ,
         label = {
             TextosSimples(text = title, amarillo)
         },
@@ -156,7 +156,7 @@ fun OutlinedNumberInput(title: String, number: TextFieldValue, onNumberChange: (
     OutlinedTextField(
         value = number,
         onValueChange = {
-            if (it.text.all(Char::isDigit)){
+            if (it.text.all(Char::isDigit) and (it.text.length <= 3)){
                 onNumberChange(it)
             }
         },
