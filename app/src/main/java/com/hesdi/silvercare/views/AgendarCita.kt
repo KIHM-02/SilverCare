@@ -49,6 +49,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import com.google.firebase.Firebase
+import com.google.firebase.auth.FirebaseAuth
 import com.hesdi.silvercare.model.Citaviewmodel
 import com.hesdi.silvercare.R
 import com.hesdi.silvercare.components.OutlinedInputs
@@ -93,6 +95,7 @@ class AgendarCita : ComponentActivity() {
 fun CitaScreen() {
 
     val viewModel = Citaviewmodel()
+    val uid= FirebaseAuth.getInstance().currentUser?.uid ?: return
 
     var idUpdate by remember { mutableStateOf("") }
     var showDialog by remember {
@@ -131,11 +134,20 @@ fun CitaScreen() {
         ) {
             Titulo("Agendar cita")
             Spacer(modifier = Modifier.height(30.dp))
-            OutlinedInputs("Nombre del Medico", medico,) { medico = it }
+            OutlinedInputs("Nombre del Medico", medico,) {
+                if (it.length<=70){
+                    medico = it }
+            }
             SpaceTopBottom(15)
-            OutlinedInputs("Ingresa la especialidad", especialidad) { especialidad = it }
+            OutlinedInputs("Ingresa la especialidad", especialidad) {
+                if (it.length<=50){
+                    especialidad = it }
+                }
             SpaceTopBottom(15)
-            OutlinedInputs("Ingrese lugar", lugar) { lugar = it }
+            OutlinedInputs("Ingrese lugar", lugar) {
+                if (it.length<50){
+                    lugar = it }
+                }
             SpaceTopBottom(15)
             Row(verticalAlignment = Alignment.CenterVertically) {
                 TextosSimples("Ingresa la fecha", Color.White)
@@ -226,7 +238,8 @@ fun CitaScreen() {
                             especializacion = especialidad,
                             fecha = selectDay,
                             hora = hora,
-                            Lugar = lugar,
+                            lugar = lugar,
+                            userId = uid,
                         )
                         viewModel.agregarCita(citas)
                         val formatter = SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault())
