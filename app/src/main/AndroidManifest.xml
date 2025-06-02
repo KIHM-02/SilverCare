@@ -5,6 +5,9 @@
     <uses-feature
         android:name="android.hardware.camera"
         android:required="false" />
+    <uses-feature
+        android:name="android.hardware.telephony"
+        android:required="false" />
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.CAMERA" />
@@ -13,6 +16,8 @@
     <uses-permission android:name="android.permission.WRITE_CALENDAR" />
     <uses-permission android:name="android.permission.READ_CALENDAR" />
     <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM"/>
+    <uses-permission android:name="android.permission.CALL_PHONE" />
+    <uses-permission android:name="android.permission.READ_CONTACTS" />
 
     <application
         android:allowBackup="true"
@@ -28,6 +33,11 @@
         <receiver android:name=".model.AlarmReceiver"
             android:enabled="true"/>
 
+        <activity
+            android:name=".views.SOSView"
+            android:exported="false"
+            android:label="sos"
+            android:theme="@style/Theme.SilverCare"/>
         <activity
             android:name=".views.NewPassword"
             android:exported="false"
