@@ -29,7 +29,6 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -43,14 +42,13 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.hesdi.silvercare.model.Citaviewmodel
 import com.hesdi.silvercare.R
 import com.hesdi.silvercare.components.SpaceTopBottom
 import com.hesdi.silvercare.components.Titulo
+import com.hesdi.silvercare.model.Citaviewmodel
 import com.hesdi.silvercare.ui.theme.SilverCareTheme
 import com.hesdi.silvercare.ui.theme.amarillo
 
@@ -70,16 +68,17 @@ class ListCitas : ComponentActivity() {
 @Composable
 fun ListCitasView() {
     val viewModel = Citaviewmodel()
-    var searchQuery by remember { mutableStateOf(TextFieldValue("")) }
+    var searchQuery by remember { mutableStateOf("")}
     val listaCitas by viewModel.listaCitas.collectAsState()
     val context = LocalContext.current
-    val activity =(LocalContext.current as? Activity)
+    val activity = LocalContext.current as? Activity
 
     Column(
         modifier = Modifier
             .fillMaxSize()
             .background(Color(0xFF0C2D4A))
             .padding(16.dp)
+            .padding(bottom = 30.dp)
     ) {
         Titulo("    Lista de citas")
         // Botón superior
@@ -139,7 +138,9 @@ fun ListCitasView() {
         // Barra de búsqueda
         OutlinedTextField(
             value = searchQuery,
-            onValueChange = { searchQuery = it },
+            onValueChange = {
+                searchQuery = it
+                viewModel.buscarPorEspecialidadYUsuario(searchQuery)},
             leadingIcon = {
                 Icon(Icons.Filled.Search, contentDescription = null)
             },
@@ -147,16 +148,13 @@ fun ListCitasView() {
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(bottom = 16.dp),
-            shape = RoundedCornerShape(12.dp),
-            colors = OutlinedTextFieldDefaults.colors(
-                unfocusedContainerColor = Color.White
-            )
+            shape = RoundedCornerShape(12.dp)
         )
         LazyColumn(
             modifier = Modifier
                 .weight(1f)
                 .fillMaxWidth()
-                .size(300.dp)
+                .size(250.dp)
         ) {
             items(listaCitas) { Cita ->
                 Box(
@@ -191,7 +189,7 @@ fun ListCitasView() {
                         )
                     }
                 }
-                SpaceTopBottom(10)
+                SpaceTopBottom(5)
             }
         }
         // Botón de regreso
@@ -201,10 +199,8 @@ fun ListCitasView() {
             },
             modifier = Modifier
                 .align(Alignment.CenterHorizontally)
-                .padding(top = 12.dp)
         ) {
             Icon(
-                //TODO: Reemplazar por imagen
                 imageVector = Icons.Filled.ArrowBack,
                 contentDescription = "Volver",
                 tint = Color(0xFFA3C525),

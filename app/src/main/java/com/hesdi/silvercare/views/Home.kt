@@ -70,7 +70,7 @@ class Home : ComponentActivity() {
                         startActivity(intent)
                     },
                     onNavigatetoCitas = {
-                        val intent = Intent(this, AgendarCita::class.java)
+                        val intent = Intent(this, ListCitas::class.java)
                         startActivity(intent)
                     },
                     onNavigatetoSOS = {
