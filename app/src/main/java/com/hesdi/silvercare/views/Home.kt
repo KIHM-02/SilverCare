@@ -17,7 +17,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
@@ -36,37 +35,31 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.hesdi.silvercare.R
-import com.hesdi.silvercare.entities.Canal_Notificacion
 import com.hesdi.silvercare.entities.Login
 import com.hesdi.silvercare.ui.theme.SilverCareTheme
 import com.hesdi.silvercare.ui.theme.amarillo
 import com.hesdi.silvercare.ui.theme.azulCielo
 import com.hesdi.silvercare.ui.theme.azulRey
 
-class Home : ComponentActivity()
-{
-    override fun onCreate(savedInstanceState: Bundle?)
-    {
+class Home : ComponentActivity() {
+    private val loginManager = Login()
+
+    override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        val notificationChannel = Canal_Notificacion()
-        notificationChannel.createChannel(this)
-
         enableEdgeToEdge()
         setContent {
             SilverCareTheme {
                 HomeFrame(
-                    onNavigatetoLogin = {
+                    onLogout = {
+                        loginManager.cerrarSesion()
                         val intent = Intent(this, LoginView::class.java)
                         intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
                         startActivity(intent)
@@ -77,14 +70,14 @@ class Home : ComponentActivity()
                         startActivity(intent)
                     },
                     onNavigatetoCitas = {
-                        val intent = Intent(this, ListCitas::class.java)
+                        val intent = Intent(this, AgendarCita::class.java)
                         startActivity(intent)
                     },
                     onNavigatetoSOS = {
-                        //val intent = Intent(this, SOS::class.java)
-                        //startActivity(intent)
+                        val intent = Intent(this, SOSView::class.java)
+                        startActivity(intent)
                     },
-                    onNavigateToCambiarContrasena = {
+                    onNavigateToNewPassword = {
                         val intent = Intent(this, NewPassword::class.java)
                         startActivity(intent)
                     }
@@ -96,11 +89,11 @@ class Home : ComponentActivity()
 
 @Composable
 fun HomeFrame(
-    onNavigatetoLogin: () -> Unit = {},
+    onLogout: () -> Unit = {},
     onNavigatetoRecordatorios: () -> Unit = {},
     onNavigatetoCitas: () -> Unit = {},
     onNavigatetoSOS: () -> Unit = {},
-    onNavigateToCambiarContrasena: () -> Unit = {}
+    onNavigateToNewPassword: () -> Unit = {}
 ) {
     Box(modifier = Modifier
         .fillMaxSize()
@@ -119,10 +112,9 @@ fun HomeFrame(
             modifier = Modifier.padding(16.dp)
         ){
             SeccionPerfil(
-                onNavigateToCambiarContrasena = onNavigateToCambiarContrasena,
-                onNavigateToLogin = onNavigatetoLogin
+                onLogout = onLogout,
+                onNavigateToNewPassword = onNavigateToNewPassword
             )
-
             MenuBotones(
                 text = "Recordatorios",
                 iconRes = R.drawable.baseline_access_time_24,
@@ -145,49 +137,54 @@ fun HomeFrame(
 //Parte superior para visualizar el perfil
 @Composable
 fun SeccionPerfil(
-    onNavigateToLogin: () -> Unit,
-    onNavigateToCambiarContrasena: () -> Unit
+    onLogout: () -> Unit,
+    onNavigateToNewPassword: () -> Unit
 ) {
-    var expanded by remember { mutableStateOf(false) }
-    val context = LocalContext.current
-    val login = Login()
-
+    var showMenu by remember { mutableStateOf(false) }
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .padding(16.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-
         Spacer(modifier = Modifier.weight(1f))
-
-        // IconButton con DropdownMenu
         Box {
-            IconButton(onClick = {expanded = true}) {
+            IconButton(onClick = {
+                showMenu = true
+            }) {
                 Icon(
                     imageVector = Icons.Default.AccountCircle,
-                    contentDescription = "Icono de Perfil",
-                    modifier = Modifier
-                        .size(60.dp)
-                        .clip(CircleShape)
-                        .background(Color.White),
-                    tint = Color(0xFF0F4C81)
+                    contentDescription = "Menú de opciones",
+                    modifier = Modifier.size(60.dp),
+                    tint = Color(0xFFB0E000)
                 )
             }
-
             DropdownMenu(
-                expanded = expanded,
-                onDismissRequest = { expanded = false }
+                expanded = showMenu,
+                onDismissRequest = { showMenu = false }
             ) {
                 DropdownMenuItem(
-                    text = { Text("Cambiar contraseña") },
-                    onClick = onNavigateToCambiarContrasena
+                    text = {
+                        Text(
+                            "Cambiar contraseña",
+                            color = Color.Black
+                        )
+                    },
+                    onClick = {
+                        showMenu = false
+                        onNavigateToNewPassword()
+                    }
                 )
                 DropdownMenuItem(
-                    text = { Text("Cerrar sesión") },
+                    text = {
+                        Text(
+                            "Cerrar sesión",
+                            color = Color.Black
+                        )
+                    },
                     onClick = {
-                        login.cerrarSesion()
-                        onNavigateToLogin
+                        showMenu = false
+                        onLogout()
                     }
                 )
             }
