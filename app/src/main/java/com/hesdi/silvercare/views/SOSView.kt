@@ -2,6 +2,7 @@ package com.hesdi.silvercare.views
 
 import android.Manifest
 import android.app.Activity
+import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
@@ -17,7 +18,6 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Call
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.*
@@ -55,6 +55,13 @@ fun SOSframe() {
     var savedPhoneNumber by remember { mutableStateOf("") }
     var savedContactName by remember { mutableStateOf("") }
 
+    // Cargar contacto guardado al inicio
+    LaunchedEffect(Unit) {
+        val (name, phone) = getContactFromPrefs(context)
+        savedPhoneNumber = phone
+        savedContactName = name
+    }
+
     // Launcher para seleccionar contacto
     val contactPickerLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.StartActivityForResult()
@@ -81,13 +88,15 @@ fun SOSframe() {
                                 val newPhoneNumber = it.getString(phoneIndex) ?: ""
                                 val newContactName = it.getString(nameIndex) ?: ""
 
-                                // Sobrescribir el contacto actual
                                 savedPhoneNumber = newPhoneNumber
                                 savedContactName = newContactName
 
+                                // Guardar en SharedPreferences
+                                saveContactToPrefs(context, newContactName, newPhoneNumber)
+
                                 Toast.makeText(
                                     context,
-                                    if (savedContactName.isNotEmpty()) "Contacto actualizado: $newContactName" else "Contacto guardado: $newContactName",
+                                    "Contacto guardado: $newContactName",
                                     Toast.LENGTH_SHORT
                                 ).show()
                             }
@@ -137,7 +146,7 @@ fun SOSframe() {
                 modifier = Modifier.padding(bottom = 40.dp)
             )
 
-            // Botón guardar contacto
+            // Botón seleccionar contacto
             Button(
                 onClick = {
                     val intent = Intent(Intent.ACTION_PICK).apply {
@@ -216,7 +225,8 @@ fun SOSframe() {
     }
 }
 
-private fun makePhoneCall(context: android.content.Context, phoneNumber: String) {
+// Función para hacer la llamada
+private fun makePhoneCall(context: Context, phoneNumber: String) {
     try {
         val intent = Intent(Intent.ACTION_CALL).apply {
             data = Uri.parse("tel:$phoneNumber")
@@ -226,6 +236,23 @@ private fun makePhoneCall(context: android.content.Context, phoneNumber: String)
         Log.e("SOSView", "Error al realizar llamada", e)
         Toast.makeText(context, "Error al realizar la llamada", Toast.LENGTH_SHORT).show()
     }
+}
+
+// Guardar contacto en SharedPreferences
+fun saveContactToPrefs(context: Context, name: String, phone: String) {
+    val prefs = context.getSharedPreferences("sos_prefs", Context.MODE_PRIVATE)
+    prefs.edit()
+        .putString("contact_name", name)
+        .putString("contact_phone", phone)
+        .apply()
+}
+
+// Leer contacto desde SharedPreferences
+fun getContactFromPrefs(context: Context): Pair<String, String> {
+    val prefs = context.getSharedPreferences("sos_prefs", Context.MODE_PRIVATE)
+    val name = prefs.getString("contact_name", "") ?: ""
+    val phone = prefs.getString("contact_phone", "") ?: ""
+    return Pair(name, phone)
 }
 
 @Preview(showBackground = true)
